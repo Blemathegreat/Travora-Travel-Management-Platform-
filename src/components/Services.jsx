@@ -47,24 +47,24 @@ export default function Services() {
                                     key={index}
                                     className="w-[calc((100%-72px)/4)] flex-shrink-0"
                                 >
-                                    <div className="flex flex-col gap-3 rounded-[34px] bg-[#FFFFFF]  h-full">
+                                    <div className=" flex flex-col gap-3 rounded-[34px] bg-[#FFFFFF]  h-full">
                                         <img 
                                             src={items.image} 
-                                            className="w-full h-[230px] object-cover rounded-[20px]" 
+                                            className="  w-full h-[230px] object-cover rounded-[20px]" 
                                             alt="serviceImage" 
                                         />
                                         <div className="flex flex-col flex-grow h-full p-4">
-    {/* Title */}
+    
     <h3 className="text-[#1A1A1A] text-[20px] md:text-[23px] leading-[120%] h-[46px] w-[230px] font-bold mb-3">
         {items.title}
     </h3>
     
-    {/* Description - grows to fill space */}
+    
     <p className="text-[#666666] text-[14px] md:text-[16px] leading-[150%] mb-4 text-left h-[83px] flex-grow">
         {items.description}
     </p>
     
-    {/* Link - stays at bottom */}
+    
     <div className="flex items-center gap-2 text-[#05FBE6] hover:text-[#04d4c4] transition-colors duration-300 cursor-pointer">
         <span className="text-[14px] md:text-[16px] font-semibold">See more</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
