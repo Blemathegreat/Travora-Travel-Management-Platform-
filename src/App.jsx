@@ -10,6 +10,7 @@ import Signup from './pages/Signup'
 import Ambassador from './pages/Ambassador'
 import Partnership from './pages/Partnership'
 import Navbar from './components/Navbar'
+import Footer from "./components/Footer"
 
 
 
@@ -28,6 +29,7 @@ export default function App() {
       <Route path='about' element={<About/>}/>
       <Route path="service" element={<Service/>}/>
       </Routes> 
+      <Footer/>
       </div>
   )
 }

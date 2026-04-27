@@ -5,6 +5,8 @@ import Questions from "../components/Questions"
 import Services from "../components/Services"
 import Partnership from "../components/Partnership"
 import TestimonialsSection  from "../components/TestimonialsSection "
+import Newsletter from "../components/Newsletter"
+import Footer from "../components/Footer"
 
 export default function Home() {
   return (
@@ -14,6 +16,8 @@ export default function Home() {
     <Services/>
     <Partnership/>
     <TestimonialsSection/>
+    <Newsletter/>
+    
     </div>
   )
 }

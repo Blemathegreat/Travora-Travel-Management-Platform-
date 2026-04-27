@@ -1,5 +1,6 @@
 import Rectangle from "./images/blog.png"
 import Partnership from "./images/partnership.svg"
+import Backgroundservice from "./images/backgroundservice.png"
 import Ellipse from "./images/Ellipse 7 (1).png"
 import Ellipse1 from "./images/Ellipse 7 (2).png"
 import Ellipse2 from "./images/Ellipse 7.png"
@@ -20,11 +21,14 @@ import pexels4 from "./images/pexels4.svg"
 import Rectangle33 from "./images/Rectangle 33.png"
 import Rectangle45 from "./images/Rectangle 45.svg"
 import Testimonial from "./images/Testimonial.svg"
+import Why from "./images/Why.png"
 import logo from "./images/logo.png"
 import { href } from "react-router-dom"
 
 export const images = {
   logo: logo, 
+  why: Why,
+  backgroundservice: Backgroundservice,
   blog: Rectangle,
   ellipse: Ellipse,
   partnership: Partnership,
