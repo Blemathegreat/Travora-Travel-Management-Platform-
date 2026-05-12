@@ -16,17 +16,25 @@ import Megaphone from "./images/Megaphone.png"
 import pexels1 from "./images/pexels1.svg"
 import pexels2 from "./images/pexels2.svg"
 import pexels3 from "./images/pexels3.svg"
+import Notification from "./images/notification.png"
 import Dropdown from "./images/dropdown.png"
 import pexels4 from "./images/pexels4.svg"
 import Rectangle33 from "./images/Rectangle 33.png"
 import Rectangle45 from "./images/Rectangle 45.svg"
+import Ambassador from "./images/ambassador.png"
 import Testimonial from "./images/Testimonial.svg"
 import Why from "./images/Why.png"
+import Hide from "./images/hide.png"
+import Referal from "./images/referal.png"
 import logo from "./images/logo.png"
 import { href } from "react-router-dom"
 
 export const images = {
-  logo: logo, 
+  logo: logo,
+  referal: Referal,
+  notification: Notification,
+  ambassador:Ambassador,
+  hide: Hide, 
   why: Why,
   backgroundservice: Backgroundservice,
   blog: Rectangle,
