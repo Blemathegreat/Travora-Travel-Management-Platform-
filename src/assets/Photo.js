@@ -24,6 +24,7 @@ import Rectangle45 from "./images/Rectangle 45.svg"
 import Ambassador from "./images/ambassador.png"
 import Testimonial from "./images/Testimonial.svg"
 import Why from "./images/Why.png"
+import Benance from "./images/balance 2.png"
 import Hide from "./images/hide.png"
 import Referal from "./images/referal.png"
 import logo from "./images/logo.png"
@@ -31,6 +32,7 @@ import { href } from "react-router-dom"
 
 export const images = {
   logo: logo,
+  benance: Benance,
   referal: Referal,
   notification: Notification,
   ambassador:Ambassador,
@@ -291,4 +293,27 @@ export const services = [{
       rating: 5,
       text: 'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text.'
     }
+  ];
+
+ export const payoutHistory = [
+    { id: 1,  name: 'John Doe',  date: 'December 15, 2026',  amount: 4.56,  type: 'deposit'  },
+     { id: 1,  name: 'John Doe',  date: 'December 15, 2026',  amount: 4.56,  type: 'deposit'  },
+  { id: 2,  name: 'John Doe',  date: 'August 8, 2026',     amount: 4.56,  type: 'deposit'  },
+  { id: 3,  name: 'John Doe',  date: 'September 19, 2026', amount: 8.24,  type: 'transfer' },
+    { id: 2,  name: 'John Doe',  date: 'August 8, 2026',     amount: 4.56,  type: 'deposit'  },
+    { id: 3,  name: 'John Doe',  date: 'September 19, 2026', amount: 8.24,  type: 'transfer' },
+    { id: 4,  name: 'Jane Doe',  date: 'May 10, 2025',       amount: 8.24,  type: 'transfer' },
+    { id: 5,  name: 'Jane Doe',  date: 'January 5, 2025',    amount: 10.54, type: 'deposit'  },
+    { id: 6,  name: 'John Doe',  date: 'April 30, 2024',     amount: 10.54, type: 'deposit'  },
+    { id: 7,  name: 'John Doe',  date: 'October 18, 2024',   amount: 12.16, type: 'transfer' },
+    { id: 8,  name: 'Jane Doe',  date: 'March 22, 2023',     amount: 15.30, type: 'deposit'  },
+    { id: 9,  name: 'John Doe',  date: 'July 14, 2023',      amount: 9.75,  type: 'transfer' },
+    { id: 10, name: 'John Doe',  date: 'November 8, 2022',   amount: 11.20, type: 'deposit'  },
+    { id: 11, name: 'Jane Doe',  date: 'February 17, 2022',  amount: 7.88,  type: 'transfer' },
+    { id: 12, name: 'John Doe',  date: 'June 25, 2021',      amount: 13.45, type: 'deposit'  },
+    { id: 13, name: 'Jane Doe',  date: 'September 30, 2021', amount: 6.92,  type: 'transfer' },
+    { id: 14, name: 'John Doe',  date: 'December 12, 2020',  amount: 14.67, type: 'deposit'  },
+    { id: 15, name: 'Jane Doe',  date: 'August 19, 2020',    amount: 5.43,  type: 'transfer' },
+    { id: 16, name: 'John Doe',  date: 'May 5, 2019',        amount: 16.89, type: 'deposit'  },
+    { id: 17, name: 'Jane Doe',  date: 'October 23, 2019',   amount: 8.12,  type: 'transfer' },
   ];

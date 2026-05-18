@@ -237,7 +237,7 @@ To see your Refer-A-Friend bonus, please go to your <span className='text-[#3458
       amount="$132.45"
       showButton={true}
       buttonText="Check Earning"
-      onButtonClick={() => console.log('Check earnings clicked')}
+      onButtonClick={() => navigate("/ambassador-reward")}
     />
   </div>
 </div>
