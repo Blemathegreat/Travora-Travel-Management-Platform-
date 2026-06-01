@@ -2,6 +2,7 @@ import React from 'react'
 import { PieChart, Pie, Cell } from "recharts";
 import EarningMetrics from "./EarningMetrics"
 import EarningCards from "./EarningCards.jsx"
+import { images } from '../../assets/Photo'
 
 export default function ReferralAnalysis() {
   // Referrals data
@@ -106,7 +107,10 @@ export default function ReferralAnalysis() {
           
           {/* Referrals Card */}
           <div className="bg-white  p-6">
-            <h2 className="text-base font-semibold text-[#333333] mb-6">Referrals</h2>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-[#333333]">Referrals</h2>
+              <img src={images.referal} alt="Referral overview" className="h-20 w-auto object-contain" />
+            </div>
             
             <div className="flex flex-col items-center">
               {/* Total Referrals - centered above gauge */}

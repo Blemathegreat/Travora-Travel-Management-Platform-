@@ -2,6 +2,7 @@ import Rectangle from "./images/blog.png"
 import Partnership from "./images/partnership.svg"
 import Backgroundservice from "./images/backgroundservice.png"
 import Ellipse from "./images/Ellipse 7 (1).png"
+import AboutUs from "./images/aboutImage.png"
 import Ellipse1 from "./images/Ellipse 7 (2).png"
 import Ellipse2 from "./images/Ellipse 7.png"
 import Frame from "./images/Frame4.png"
@@ -28,10 +29,13 @@ import Benance from "./images/balance 2.png"
 import Hide from "./images/hide.png"
 import Referal from "./images/referal.png"
 import logo from "./images/logo.png"
+import About1 from "./images/about1.png"
 import { href } from "react-router-dom"
 
 export const images = {
   logo: logo,
+  about1: About1,
+  about: AboutUs, 
   benance: Benance,
   referal: Referal,
   notification: Notification,

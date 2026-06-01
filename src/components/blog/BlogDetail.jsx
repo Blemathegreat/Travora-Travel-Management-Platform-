@@ -1,7 +1,7 @@
 // src/pages/BlogDetail.jsx
 import { useParams, useNavigate } from "react-router-dom";
-import { blogs } from "./BlogData";
 import BlogCard from "./BlogCard";
+import { useBlogContext } from "../../context/BlogContext";
 import { 
   Share2,  
   Link2, 
@@ -12,9 +12,8 @@ import {
 const BlogDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log("ID FROM URL:", id);
-
-  const blog = blogs.find(b => b.id === Number(id));
+  const { getBlogById, blogs } = useBlogContext();
+  const blog = getBlogById(id);
 
   // Handle case where blog is not found
   if (!blog) {

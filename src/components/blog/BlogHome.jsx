@@ -1,10 +1,11 @@
 // src/pages/Home.jsx
 import { useState } from "react";
-import { blogs } from "./BlogData";
 import BlogCard from "./BlogCard";
+import { useBlogContext } from "../../context/BlogContext";
 
 
 const BlogHome = () => {
+  const { blogs } = useBlogContext();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 

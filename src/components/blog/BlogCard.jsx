@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const BlogCard = ({ blog }) => {
   const navigate = useNavigate();
+  const dateValue = blog.date instanceof Date ? blog.date : new Date(blog.date)
 
   return (
     <div className="bg-white rounded-2xl w-[600px] shadow-md overflow-hidden">
@@ -10,7 +11,7 @@ const BlogCard = ({ blog }) => {
 
       <div className="p-4">
         <p className="text-gray-500 text-sm mb-2">
-          {blog.date.toLocaleDateString("en-US", {
+          {dateValue.toLocaleDateString("en-US", {
             month: "short",     day: "numeric",     year: "numeric"
           })}
         </p>    

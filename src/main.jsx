@@ -4,10 +4,17 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 
+import { BlogProvider } from './context/BlogContext'
+import { AmbassadorProvider } from './context/AmbassadorContext'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-    <App />
+      <BlogProvider>
+        <AmbassadorProvider>
+          <App />
+        </AmbassadorProvider>
+      </BlogProvider>
     </BrowserRouter>
   </StrictMode>,
 )

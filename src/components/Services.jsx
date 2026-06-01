@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { services } from '../assets/Photo'
 
 export default function Services() {
@@ -43,11 +44,15 @@ export default function Services() {
                             }}
                         >
                             {services.map((items, index) => (
-                                <div 
+                                <motion.div 
                                     key={index}
                                     className="w-[calc((100%-72px)/4)] flex-shrink-0"
+                                    initial={{ opacity: 0, y: 24 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.55, delay: index * 0.08 }}
+                                    whileHover={{ y: -6 }}
                                 >
-                                    <div className=" flex flex-col gap-3 rounded-[34px] bg-[#FFFFFF]  h-full">
+                                    <div className="flex flex-col gap-3 rounded-[34px] bg-[#FFFFFF] h-full">
                                         <img 
                                             src={items.image} 
                                             className="  w-full h-[230px] object-cover rounded-[20px]" 
@@ -73,7 +78,7 @@ export default function Services() {
     </div>
 </div> 
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                     </div>

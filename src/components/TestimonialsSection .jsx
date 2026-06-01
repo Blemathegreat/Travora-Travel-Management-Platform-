@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { images, testimonials } from '../assets/Photo';
 
@@ -53,7 +54,12 @@ const TestimonialsSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
+      <motion.div
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
         {/* Header with Navigation */}
         <div className="w-full max-w-7xl mb-12 flex items-center justify-between">
           <h2 className="text-white text-4xl md:text-5xl font-bold tracking-tight">
@@ -83,16 +89,16 @@ const TestimonialsSection = () => {
         {/* Testimonials Cards Container */}
         <div className=" relative w-full max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {getCurrentTestimonials().map((testimonial, index) => (
-              <div
-                key={testimonial.id}
-                className="bg-white rounded-lg p-6 shadow-xl transform transition-all duration-600 animate-fadeInUp"
-                style={{
-                  animationDelay: `${index * 150}ms`,
-                  opacity: isAnimating ? 0 : 1,
-                  transform: isAnimating ? 'translateY(20px)' : 'translateY(0)',
-                }}
-              >
+            <AnimatePresence mode="wait">
+              {getCurrentTestimonials().map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.id}
+                  className="bg-white rounded-lg p-6 shadow-xl"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: index * 0.08 }}
+                >
                 {/* Profile Image */}
                 <div className=" absolute top-[-20px] flex justify-center mb-4">
                   <div className="">
@@ -136,8 +142,9 @@ const TestimonialsSection = () => {
                 <p className="text-gray-600 text-sm leading-relaxed text-center">
                   {testimonial.text}
                 </p>
-              </div>
+              </motion.div>
             ))}
+          </AnimatePresence>
           </div>
         </div>
 
@@ -158,25 +165,8 @@ const TestimonialsSection = () => {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* CSS Animation Keyframes */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeInUp {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 };

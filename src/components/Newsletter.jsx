@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { images, testimonials } from '../assets/Photo';
 
 const Newsletter = () => {
@@ -14,15 +15,24 @@ const Newsletter = () => {
   };
 
   return (
-    <div className="w-full   p-4 md:p-10 lg:p-16">
-      <div className="bg-white rounded-[20px] shadow-lg max-w-7xl mx-auto overflow-hidden">
+    <div className="w-full p-4 md:p-10 lg:p-16">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+        className="bg-white rounded-[20px] shadow-lg max-w-7xl mx-auto overflow-hidden"
+      >
         <div className="flex flex-col md:flex-row ">
           {/* Left Side - Image */}
           <div className="md:w-[45%] relative overflow-hidden">
-            <img
+            <motion.img
               src={images.rectangle33}
               alt="Luxury villa with pool"
-              className="w-full h-full object-cover min-h-[250px] md:min-h-full transform transition-transform duration-700 hover:scale-110"
+              className="w-full h-full object-cover min-h-[250px] md:min-h-full"
+              initial={{ scale: 0.98 }}
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ duration: 0.7 }}
             />
             {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent"></div>
@@ -62,7 +72,7 @@ const Newsletter = () => {
             </form>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

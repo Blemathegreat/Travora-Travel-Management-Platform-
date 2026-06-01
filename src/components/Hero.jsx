@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { images } from '../assets/Photo'
 import Logo from "./Logo.jsx"
 import {NavLink} from "react-router-dom"
@@ -20,10 +21,27 @@ export default function Hero() {
             <p className='text-[#D9D9D9] sm:h-[150px] font-medium w-[90%] lg:max-w-5xl sm:mx-auto font-medium text-center text-[36px] leading-[100%] '>Your gateway to the world.<span className='text-[#05FBE6]'>We connect you with trusted solutions </span>  for travel, education, and migration—making your journey 
  <span className='text-[#05FBE6]'>seamless and successful</span>.</p>
     </div>
-    <div className='flex gap-3 items-center justify-center py-4 px-4 md:py-8 lg:py-10'>
-      <button className='border-[2px] rounded-[5px] border-[#05FBE6] py-[12px] px-[24px] sm:py-[22px] text-[#FFFFFF] text-[14px] sm:text-[24px] leading-[100%] sm:px-[88px] rounded-5px'>Explore our Service</button>
-      <button className=" rounded-[5px] py-[12px] px-[14px] sm:py-[22px] sm:px-[88px] bg-[#05FBE6] text-[#001721] text-[14px] sm:text-[24px] leading-[100%]"> Our Expert Guided</button>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: 'easeOut', delay: 0.1 }}
+      className='flex gap-3 items-center justify-center py-4 px-4 md:py-8 lg:py-10'
+    >
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
+        className='border-[2px] rounded-[5px] border-[#05FBE6] py-[12px] px-[24px] sm:py-[22px] text-[#FFFFFF] text-[14px] sm:text-[24px] leading-[100%] sm:px-[88px] rounded-5px'
+      >
+        Explore our Service
+      </motion.button>
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
+        className="rounded-[5px] py-[12px] px-[14px] sm:py-[22px] sm:px-[88px] bg-[#05FBE6] text-[#001721] text-[14px] sm:text-[24px] leading-[100%]"
+      >
+        Our Expert Guided
+      </motion.button>
+    </motion.div>
     </div>
   )
 }

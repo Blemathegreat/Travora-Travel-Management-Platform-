@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { images,navbar } from '../assets/Photo'
+import { motion } from 'framer-motion'
+import { images, navbar } from '../assets/Photo'
 import Logo from "./Logo.jsx"
 import {NavLink} from "react-router-dom"
 
@@ -8,11 +9,16 @@ export default function  () {
   const [visible,setVisible] = useState(false)
   
   return (
-    <div className="w-full  ">
-      <div className=" bg-cover bg-no-repeat bg-center  " style={{backgroundImage : `url(${images.background})`}} >
-            <div className="h-full items-center ">
-          <div className="w-full backdrop-blur-sm bg-[#0017219E]/10  px-4 md:px-10 lg:px-16">
-          <div className="flex justify-between gap-2 items-center">
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: 'easeOut' }}
+    >
+      <div className="bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${images.background})` }}>
+        <div className="h-full items-center">
+          <div className="w-full backdrop-blur-sm bg-[#0017219E]/10 px-4 md:px-10 lg:px-16">
+            <div className="flex justify-between gap-2 items-center">
           <div>
             <Logo/>
           </div>
@@ -36,8 +42,12 @@ export default function  () {
           </div>
         </div>
 
-   <div className={`absolute top-0 right-0 bottom-0 bg-red-500 bg-center bg-cover bg-no-repeat transition-all overflow-hidden ${visible? "w-full" : "w-0"}`}
-         style={{backgroundImage : `url(${images.background})`}}
+   <motion.div
+      className="absolute top-0 right-0 bottom-0 bg-red-500 bg-center bg-cover bg-no-repeat overflow-hidden"
+      style={{ backgroundImage: `url(${images.background})` }}
+      animate={{ width: visible ? '100%' : '0%' }}
+      initial={{ width: '0%' }}
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
    >
             <div className="flex flex-col  p-3">
             <div onClick={()=>setVisible(false)} className="flex gap-3 items-center">
@@ -57,10 +67,10 @@ export default function  () {
               }
             </div>
             </div>
-          </div>
+          </motion.div>
        
       </div>
 
-    </div>
+    </motion.div>
   )
 }
