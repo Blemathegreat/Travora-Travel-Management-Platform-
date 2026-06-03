@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import About from './pages/About'
 import Service from './pages/Services'
+import Consultation from './pages/Consultation'
 import Contact from './pages/Contact'
 import Blog from './pages/Blog'
 import Login from './pages/Login'
@@ -40,6 +41,7 @@ export default function App() {
       
       <Route element={<PublicLayout />}>
         <Route path='/' element={<Home/>}/>
+        <Route path='/consultation' element={<Consultation/>}/>
         <Route path='/contact' element={<Contact/>}/>
         <Route path="/ambassador-reward" element={<AmbassordorReward/>}/> 
         <Route path='/blog' element={<Blog/>}/>

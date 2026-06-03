@@ -100,7 +100,7 @@ const AdminTestimonials = () => {
                     <h2 className="text-base font-semibold text-slate-900">{testimonial.name}</h2>
                     <p className="text-sm text-slate-500">{testimonial.role}</p>
                   </div>
-                  <div className="flex items-center gap-1 mb-4">
+                  <div className="flex items-center gap-1 mb-4">  
                     {[...Array(ratingCount)].map((_, index) => (
                       <Star key={index} className="text-amber-400" size={18} />
                     ))}

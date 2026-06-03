@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { images } from '../../assets/Photo';
+import { showSuccess } from '../../utils/toastConfig';
 import VerificationModel from './VerificationModel.jsx';
 
 export default function SignUp() {
@@ -118,9 +119,9 @@ export default function SignUp() {
           ConfirmPassword: '',
         });
 
-        alert('Registration successful! Check your code and verify to continue.');
+        showSuccess('Registration successful! Verify your email to activate your account.');
       } else {
-        alert('Login successful. Redirecting to your dashboard...');
+        showSuccess('Welcome back! Redirecting to your dashboard...');
         navigate('/ambassador/dashboard');
       }
     }

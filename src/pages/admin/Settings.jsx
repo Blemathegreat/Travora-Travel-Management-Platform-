@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X } from 'lucide-react'
+import { showSuccess, showError, showWarning } from '../../utils/toastConfig'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -20,14 +21,14 @@ export default function Settings() {
   function handleUpdate(e) {
     e.preventDefault()
     // placeholder: save profile info (no backend hooked)
-    alert('Profile updated (demo)')
+    showSuccess('Profile updated successfully')
   }
 
   function handleChangePassword(e) {
     e.preventDefault()
-    if (!passwords.newPassword) return alert('Enter a new password')
-    if (passwords.newPassword !== passwords.confirm) return alert('Passwords do not match')
-    alert('Password changed (demo)')
+    if (!passwords.newPassword) return showError('Please enter a new password')
+    if (passwords.newPassword !== passwords.confirm) return showError('Passwords do not match')
+    showSuccess('Password changed successfully')
     setPasswords({ newPassword: '', confirm: '' })
   }
 

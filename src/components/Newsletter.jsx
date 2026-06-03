@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { images, testimonials } from '../assets/Photo';
+import { showSuccess } from '../utils/toastConfig';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ const Newsletter = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Subscribed with email:', email); 
-    alert('Thank you for subscribing!');
+    showSuccess('Thanks for subscribing! Check your email for exclusive travel deals.');
     setEmail('');
     // Add your subscription logic here
   };

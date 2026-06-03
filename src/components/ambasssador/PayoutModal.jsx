@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { showInfo } from '../../utils/toastConfig';
 
 export default function PayoutModal({ isOpen, onClose, onContinue }) {
   const [agreed, setAgreed] = useState(false);
@@ -76,7 +77,7 @@ export default function PayoutModal({ isOpen, onClose, onContinue }) {
             <button
               type="button"
               className="text-[#456573] hover:underline font-medium"
-              onClick={() => alert('Terms & Conditions would open here')}
+              onClick={() => showInfo('Terms & Conditions page would open here')}
             >
               Terms &amp; Conditions
             </button>

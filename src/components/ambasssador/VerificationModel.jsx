@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { showSuccess } from '../../utils/toastConfig';
 
 export default function VerificationModel({ isOpen, onClose, onSuccess, correctCode }) {
   const [userCode, setUserCode] = useState("");
@@ -9,7 +10,7 @@ export default function VerificationModel({ isOpen, onClose, onSuccess, correctC
 
   const handleVerify = () => {
     if (userCode === correctCode) {
-      alert("Verification successful ✅");
+      showSuccess("Verification successful! Your account is now active.");
       setUserCode("");
       setError("");
       if (onSuccess) {

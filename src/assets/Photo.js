@@ -29,11 +29,17 @@ import Benance from "./images/balance 2.png"
 import Hide from "./images/hide.png"
 import Referal from "./images/referal.png"
 import logo from "./images/logo.png"
+import Contact from "./images/contact1.png"
+import Contact1 from "./images/contact2.png"
 import About1 from "./images/about1.png"
+import Viaggio from "./images/vaggio.png"
 import { href } from "react-router-dom"
 
 export const images = {
   logo: logo,
+  contact: Contact,
+  contact1: Contact1,
+  viaggio: Viaggio,
   about1: About1,
   about: AboutUs, 
   benance: Benance,

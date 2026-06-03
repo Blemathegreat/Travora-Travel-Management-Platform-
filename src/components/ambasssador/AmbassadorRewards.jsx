@@ -150,8 +150,8 @@ export default function AmbassadorRewards() {
             </p>
 
             {/* Setup Account Banner */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-4 flex items-start shadow-sm gap-4">
-              <div className="flex-shrink-0">
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 flex flex-col sm:flex-row items-start shadow-sm gap-4">
+              <div className="hidden sm:block flex-shrink-0">
                 <div className="h-[70px] w-[70px] bg-teal-100 rounded-lg flex items-center justify-center overflow-hidden">
                   <img 
                     src={images.benance} 
@@ -160,7 +160,7 @@ export default function AmbassadorRewards() {
                   />
                 </div>
               </div>
-              <div>
+              <div className="w-full">
                 <p className="text-sm font-semibold text-gray-800 mb-1">
                   Set up your payout account to get paid
                 </p>

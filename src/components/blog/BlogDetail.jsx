@@ -2,6 +2,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import BlogCard from "./BlogCard";
 import { useBlogContext } from "../../context/BlogContext";
+import { showSuccess, showError } from '../../utils/toastConfig';
 import { 
   Share2,  
   Link2, 
@@ -47,10 +48,10 @@ const BlogDetail = () => {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl);
-      alert("Link copied to clipboard!");
+      showSuccess('Link copied to clipboard!');
     } catch (err) {
       console.error('Failed to copy:', err);
-      alert("Failed to copy link. Please try again.");
+      showError('Failed to copy link. Please try again.');
     }
   };
 

@@ -27,25 +27,24 @@ const handleTwitterShare = () => {
 };
     console.log("im working")
   return (
-    <div className='max-w-[1580px]  mx-auto min-h-screen rounded-t-[5px]'>
-    <div className=''>
-        <h1 className="text-[#333232] py-4 font-bold  text-2xl md:text-[36px] leading-[150%] tracking-[0.4%]">Referral Dashboard</h1>
-        <div className='flex gap-3 items-start justify-between'>
+    <div className='w-full max-w-[1580px] mx-auto min-h-screen rounded-t-[5px] px-4 sm:px-6 lg:px-8'>
+      <div className=''>
+        <h1 className="text-[#333232] py-4 font-bold text-2xl md:text-[36px] leading-[150%] tracking-[0.4%]">Referral Dashboard</h1>
+        <div className='flex flex-col lg:flex-row gap-6 items-start'>
            {/* left side*/} 
-           <div className='flex flex-col gap-3 max-w-[960px] w-full'>
-            <div className='shadow-[0px_2px_6.47px_0px_rgba(0,0,0,0.05)] flex items-center justify-between'
+           <div className='flex flex-col gap-3 w-full'>
+            <div className='shadow-[0px_2px_6.47px_0px_rgba(0,0,0,0.05)] flex flex-col lg:flex-row items-center justify-between w-full rounded-3xl overflow-hidden'
              style={{
        background: 'linear-gradient(180deg, #245B87 0%, #34627A 33%, #4E597B 66%, #677AF0 100%)'
      }}>
                     {/*text content*/}
-                    <div className=' space-y-6 px-4 md:px-10 lg:px-16 py-6 md:py-16 lg:20 flex flex-col gap-2'>
-                    <p className="text-[#FFFFFF] w-[560px] h-[41px] text-base md:text-[20px] leading-[150%]">Refer your friends to viaggio Abroad, earn a commission for referral</p>
-                    <p className='text-[#FFFFFF] w-[560px]  text-base md:text-[20px] leading-[150%]'>invite & Earn with viaggio abroad! Share your unique referral link. Earn 10% when your referral 
-                         subscribe. Start building your passive income, </p>
+                    <div className='space-y-6 px-4 py-6 md:px-10 lg:px-16 md:py-10 lg:py-16 flex flex-col gap-2 w-full lg:max-w-[560px]'>
+                      <p className="text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]">Refer your friends to viaggio Abroad, earn a commission for referral</p>
+                      <p className='text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]'>invite & Earn with viaggio abroad! Share your unique referral link. Earn 10% when your referral subscribe. Start building your passive income.</p>
                     </div>
                     {/*illustration*/}
-                    <div className='max-w-[1000px] h-[240px] px-4 '>
-                               <img src={images.referal} alt="referal" className='w-[900px] h-[190px] object-cover  ' />
+                    <div className='w-full lg:w-[560px] px-4 py-6'>
+                      <img src={images.referal} alt="referal" className='w-full h-auto max-h-[260px] object-cover rounded-3xl' />
                     </div>
              
             </div>
@@ -100,10 +99,8 @@ const handleTwitterShare = () => {
         </div>
       </div>
       {/* text beneath */}
-      <div className='py-4 md:py-6 max-w-[754px]'>
-        <p className='text-[15px] leading-[150%] tracking-[0.4%] text-gray-500'>Just make sure they use this link to book consultation and earn a fee.
-             To view details, visit <span className='text-[#345867]'>Terms & Conditions</span> 
-To see your Refer-A-Friend bonus, please go to your <span className='text-[#345867]'>Referral Activity</span></p>
+      <div className='py-4 md:py-6 w-full'>
+        <p className='text-[15px] leading-[150%] tracking-[0.4%] text-gray-500'>Just make sure they use this link to book consultation and earn a fee. To view details, visit <span className='text-[#345867]'>Terms & Conditions</span>. To see your Refer-A-Friend bonus, please go to your <span className='text-[#345867]'>Referral Activity</span>.</p>
       </div>
     </div>
            </div>
@@ -205,7 +202,7 @@ To see your Refer-A-Friend bonus, please go to your <span className='text-[#3458
 </div>
         </div>
       <div>
-  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 py-4 w-3/4'>
+  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 py-4 w-full'>
     {/* Card 1 - Earnings this month */}
     <EarningCards
       title="Earnings this month"

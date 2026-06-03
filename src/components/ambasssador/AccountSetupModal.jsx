@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { showSuccess } from '../../utils/toastConfig';
 
 export default function AccountSetupModal({ isOpen, onClose, onBack }) {
   // ═══════════════════════════════════════════════════════════════════════════
@@ -103,7 +104,7 @@ export default function AccountSetupModal({ isOpen, onClose, onBack }) {
     
     if (validateForm()) {
       console.log('Form submitted successfully:', formData);
-      alert(`Account linked successfully!\n\nPayment Method: ${formData.paymentMethod}`);
+      showSuccess(`Account linked successfully! Using ${formData.paymentMethod}.`);
       onClose();
     }
   };

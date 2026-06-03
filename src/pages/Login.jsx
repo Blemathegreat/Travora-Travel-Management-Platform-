@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { showSuccess } from '../utils/toastConfig';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function Login() {
     setErrors(validationErrors);
 
     if (!hasErrors) {
-      alert('Welcome back! Redirecting to your dashboard...');
+      showSuccess('Welcome back! Redirecting to your dashboard...');
       navigate('/ambassador/dashboard');
     }
 

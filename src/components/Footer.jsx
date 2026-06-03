@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const footerLinks = {
@@ -16,7 +17,7 @@ const Footer = () => {
     contact: [
       { label: 'FAQ', href: '#' },
       { label: 'Get in touch', href: '#' },
-      { label: 'Partnerships', href: '#' }
+      { label: 'Ambassador', href: '/ambassador' }
     ]
   };
 
@@ -24,7 +25,7 @@ const Footer = () => {
     <footer className="bg-[#001721] text-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {/* Support Column */}
           <div className="space-y-4">
             <h3 className="text-white font-bold text-lg mb-5">Support</h3>
@@ -65,12 +66,21 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.contact.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-white text-sm transition-colors duration-300"
-                  >
-                    {link.label}
-                  </a>
+                  {link.href.startsWith('/') ? (
+                    <Link
+                      to={link.href}
+                      className="text-gray-300 hover:text-white text-sm transition-colors duration-300"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-gray-300 hover:text-white text-sm transition-colors duration-300"
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -131,14 +141,14 @@ const Footer = () => {
         <div className="border-t border-white/10 mb-8"></div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           {/* Copyright */}
           <p className="text-gray-400 text-sm">
             © Copyright 2025
           </p>
 
           {/* Payment Methods */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-3">
             {/* Visa */}
             <div className="bg-white rounded px-3 py-2 flex items-center justify-center min-w-[50px] h-[32px]">
               <svg className="h-4" viewBox="0 0 48 32" fill="none">

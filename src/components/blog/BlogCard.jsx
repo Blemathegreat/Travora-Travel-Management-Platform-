@@ -6,7 +6,7 @@ const BlogCard = ({ blog }) => {
   const dateValue = blog.date instanceof Date ? blog.date : new Date(blog.date)
 
   return (
-    <div className="bg-white rounded-2xl w-[600px] shadow-md overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-[600px] mx-auto">
       <img src={blog.image} className="w-full h-48 object-cover" />
 
       <div className="p-4">
@@ -15,8 +15,8 @@ const BlogCard = ({ blog }) => {
             month: "short",     day: "numeric",     year: "numeric"
           })}
         </p>    
-        <h2 className="text-[30px] font-bold h-[86px] text-[#1E1E1E] ">{blog.title}</h2>
-        <p className="text-[#7D7D7D] text-[16px] mt-2 w-[400px] py-2 leading-[24px] ">{blog.excerpt}</p>
+        <h2 className="text-2xl sm:text-[30px] font-bold text-[#1E1E1E] leading-tight mb-3">{blog.title}</h2>
+        <p className="text-[#7D7D7D] text-[16px] mt-2 leading-[24px]">{blog.excerpt}</p>
 
         <button
           onClick={() => {

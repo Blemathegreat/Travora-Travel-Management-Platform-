@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, Plus, Edit2, Trash2 } from 'lucide-react';
+import { showWarning } from '../../utils/toastConfig';
 
 export default function ConsultationSetting() {
   const [consultations, setConsultations] = useState([
@@ -32,7 +33,7 @@ export default function ConsultationSetting() {
 
   const handleSave = () => {
     if (!selectedDate || !selectedTime) {
-      alert('Please select both date and time');
+      showWarning('Please select both date and time to proceed');
       return;
     }
 

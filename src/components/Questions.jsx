@@ -4,8 +4,8 @@ export default function Questions(){
    console.log(question)
     return(
             <div className="max-w-7xl mx-auto py-6 mb-10"> 
-                <div className="flex flex-col gap-4 items-center ">
-                    <h1 className="text-[#000000] text-[64px] font-bold leading-[72%] py-6">Have <span className="text-[#05FBE6]">Question</span></h1>
+                <div className="flex flex-col gap-4 px-4 items-center ">
+                    <h1 className="text-[#000000] text-2xl sm:text-[64px] font-bold leading-[72%]  py-6">Have <span className="text-[#05FBE6]">Question</span></h1>
                   <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-[55px]'>
   {question.map((item, index) => (
     <div 
