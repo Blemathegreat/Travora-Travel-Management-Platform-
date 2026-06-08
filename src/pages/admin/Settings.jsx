@@ -84,11 +84,7 @@ export default function Settings() {
             </form>
           </div>
 
-          <aside className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-700 mb-4">Account</h3>
-            <div className="space-y-4">{/* Logout removed - handled via sidebar */}
-            </div>
-          </aside>
+        
         </div>
 
         {/* logout modal removed from settings - use sidebar logout */}

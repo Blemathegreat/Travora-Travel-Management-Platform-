@@ -23,8 +23,8 @@ export default function EarningMetrics() {
   const years = ['2021', '2022', '2023', '2024']
   
   return (
-    <div className="max-w-[1400px]   bg-[#ffffff] p-6">
-      <div className="max-w-[1200px] mx-auto space-y-6">
+    <div className="  w-full sm:max-w-[1400px]   bg-[#ffffff] p-2 sm:p-6">
+      <div className=" w-full sm:max-w-[1200px] mx-auto space-y-6">
         
         {/* Earning Metrics Section */}
         <div className="bg-white rounded-xl overflow-hidden">
@@ -37,9 +37,9 @@ export default function EarningMetrics() {
           <div className="flex flex-col lg:flex-row gap-6 items-center px-6 justify-between ">
             
             {/* Left Side - Bar Chart */}
-            <div className="w-[700px] p-8">
+            <div className="w-full lg:w-[700px]  lg:p-8">
               {/* Header with Dropdown */}
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex gap-3 items-center justify-between mb-8">
                 <h3 className="text-base font-semibold text-[#333333]">Monthly Earnings</h3>
                 
                 {/* Year Dropdown */}
@@ -63,7 +63,7 @@ export default function EarningMetrics() {
               </div>
               
               {/* Bar Chart */}
-              <div className="h-[300px] w-full">
+              <div className="h-[220px] sm:h-[260px] md:h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
                     data={monthlyData}
@@ -92,7 +92,7 @@ export default function EarningMetrics() {
                       dataKey="amount" 
                       fill="#1F283D" 
                       radius={[6, 6, 0, 0]}
-                      maxBarSize={4}
+                      maxBarSize={12}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -103,10 +103,10 @@ export default function EarningMetrics() {
             <div className="hidden lg:block w-px bg-gray-200"></div>
             
             {/* Right Side - Pending Earnings */}
-            <div className="flex-0 flex flex-col items-center px-4 shadow-[0px_2px_8px_rgba(0,0,0,0.08)]  justify-center py-8 md:px-10 lg:min-w-[400px]">
+            <div className="w-full flex flex-col items-center px-4 shadow-[0px_2px_8px_rgba(0,0,0,0.08)] justify-center py-8 md:px-10 lg:w-[400px]">
               <div className="text-center space-y-4 ">
                 <p className="text-sm text-gray-500 font-medium">Pending Earnings this month</p>
-                <h2 className="text-6xl font-bold text-[#1F283D] tracking-tight">$142.15</h2>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F283D] tracking-tight">$142.15</h2>
                 
                 {/* Growth indicator */}
                 <div className="inline-flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-full">
