@@ -42,7 +42,7 @@ export default function Services() {
         <section className='max-w-[1650px] bg-[#001721] mx-auto overflow-hidden rounded-[37px] py-10 px-4'>
             <div className="flex flex-col gap-3">
 
-                <h1 className="leading-[110%] text-[32px] sm:text-[44px] md:text-[64px] text-white font-bold text-center pt-4 md:pt-10">
+                <h1 className="leading-[110%] text-[32px] sm:text-[44px] md:text-[64px] text-white font-bold text-center  md:pt-10">
                     Your Journey, Your Path with <span className='text-[#05FBE6]'>Viaggio Abroad</span>
                 </h1>
 

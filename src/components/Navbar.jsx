@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { images, navbar } from '../assets/Photo'
 import Logo from "./Logo.jsx"
 import {NavLink} from "react-router-dom"
+import { Menu} from "lucide-react";
 
 
 export default function  () {
@@ -17,12 +18,12 @@ export default function  () {
     >
       <div className="bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${images.background})` }}>
         <div className="h-full items-center">
-          <div className="w-full backdrop-blur-sm bg-[#0017219E]/10 px-4 md:px-10 lg:px-16">
+          <div className=" sm:w-full backdrop-blur-sm bg-[#0017219E]/10 py-2 px-4 md:px-10 lg:px-16">
             <div className="flex justify-between gap-2 items-center">
           <div>
             <Logo/>
           </div>
-          <div className="hidden md:flex space-x-4 items-center ">
+          <div className="hidden lg:flex space-x-4 items-center ">
             {
               navbar.map((item,index)=>{
                return(
@@ -33,9 +34,9 @@ export default function  () {
               })
             }
           </div>
-          <div className='py-4'><button className="border-2 border-[#05FBE6] text-[#05FBE6] rounded-[68px] px-6 md:px-12 py-3 hidden sm:block">Contact</button></div>
+          <div className='py-4'><button className="border-2 border-[#05FBE6] text-[#05FBE6] rounded-[68px] px-6 md:px-12 py-3 hidden  lg:block">Contact</button></div>
              {/* Mobile Hamburger Button */}
-             <img onClick={()=>setVisible(true)} src={images.menu} alt="menuimage" className='w-10 md:hidden cursor-pointer text-white'/>
+             <Menu onClick={()=>setVisible(true)}  className='w-10 lg:hidden cursor-pointer text-white'/>
           </div>
        
 
@@ -43,7 +44,7 @@ export default function  () {
         </div>
 
    <motion.div
-      className="absolute top-0 right-0 bottom-0 bg-red-500 bg-center bg-cover bg-no-repeat overflow-hidden"
+      className="fixed top-0 right-0 bottom-0 z-[9999] bg-red-500 h-screen bg-center bg-cover bg-no-repeat overflow-hidden"
       style={{ backgroundImage: `url(${images.background})` }}
       animate={{ width: visible ? '100%' : '0%' }}
       initial={{ width: '0%' }}

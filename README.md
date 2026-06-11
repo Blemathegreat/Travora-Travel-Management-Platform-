@@ -1,4 +1,4 @@
-# KopperConnect
+# KopperConnnect
 
 KopperConnect is a modern frontend application built with React and Vite. It delivers a public marketing site and a dashboard-driven user experience for ambassadors and admins, including blog content, consultation booking, partnership pages, and referral activities.
 

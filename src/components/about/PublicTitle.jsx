@@ -3,7 +3,7 @@ import { images } from '../../assets/Photo'
 
 export default function PublicTitle({title}) {
   return (
-    <div className='relative flex flex-col items-center justify-center pt-16 pb-8 px-4 h-[500px] bg-cover bg-center bg-no-repeat' 
+    <div className='relative flex flex-col items-center justify-center md:pt-16 pb-8 px-4 h-[500px] bg-cover bg-center bg-no-repeat' 
                    style={{backgroundImage: `url(${images.backgroundservice})`}}>
                             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#011826DE]/60 to-[#011826DE]/95"></div>
                     <div className="relative z-10 text-center">
