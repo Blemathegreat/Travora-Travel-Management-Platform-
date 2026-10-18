@@ -1,37 +1,95 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, MoreVertical, Eye, Ban, XCircle } from 'lucide-react'
-import { useAmbassadors } from '../../context/AmbassadorContext'
+import { api } from '../../utils/apiClient'
+import { showSuccess, showError } from '../../utils/toastConfig'
 
 export default function AmbassadorList() {
   const navigate = useNavigate()
-  const { ambassadors, updateAmbassadorStatus } = useAmbassadors()
 
+  const [ambassadors, setAmbassadors] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeMenu, setActiveMenu] = useState(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const menuRefs = useRef({})
 
+  useEffect(() => {
+    fetchAmbassadors()
+  }, [])
+
+  async function fetchAmbassadors() {
+    try {
+      const res = await api.get('/api/ambassadors')
+      setAmbassadors(res.data.ambassadors)
+    } catch (err) {
+      showError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Database values on the left, what we show on screen on the right -
+  // one single place that maps between the two, so the rest of this
+  // file never has to think about database spelling at all.
+  const statusLabels = {
+    pending_approval: 'Pending Approval',
+    active: 'Productive',
+    suspended: 'Suspended',
+    rejected: 'Rejected',
+  }
+
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Productive':
+      case 'active':
         return 'bg-blue-100 text-blue-700'
-      case 'Suspended':
+      case 'suspended':
         return 'bg-yellow-100 text-yellow-700'
-      case 'Deactivated':
+      case 'rejected':
         return 'bg-red-100 text-red-700'
+      case 'pending_approval':
+        return 'bg-slate-100 text-slate-700'
       default:
         return 'bg-slate-100 text-slate-700'
     }
   }
 
-  const handleStatusChange = (id, newStatus) => {
-    updateAmbassadorStatus(id, newStatus)
+  const handleApprove = async (id) => {
+  try {
+    await api.patch(`/api/ambassadors/${id}/approve`)
+    showSuccess('Ambassador approved')
     setActiveMenu(null)
+    fetchAmbassadors()
+  } catch (err) {
+    showError(err.message)
+  }
+}
+
+const handleReject = async (id) => {
+  try {
+    await api.patch(`/api/ambassadors/${id}/reject`)
+    showSuccess('Ambassador rejected')
+    setActiveMenu(null)
+    fetchAmbassadors()
+  } catch (err) {
+    showError(err.message)
+  }
+}
+
+  const handleSuspend = async (id) => {
+    try {
+      await api.patch(`/api/ambassadors/${id}/suspend`)
+      showSuccess('Ambassador suspended')
+      setActiveMenu(null)
+      fetchAmbassadors()
+    } catch (err) {
+      showError(err.message)
+    }
   }
 
   const filteredAmbassadors = ambassadors.filter(amb => {
-    const matchesSearch = amb.name.toLowerCase().includes(search.toLowerCase()) || 
+    const fullName = `${amb.first_name} ${amb.last_name}`.toLowerCase()
+    const matchesSearch = fullName.includes(search.toLowerCase()) ||
                           amb.email.toLowerCase().includes(search.toLowerCase())
     const matchesStatus = statusFilter === 'All' || amb.status === statusFilter
     return matchesSearch && matchesStatus
@@ -47,10 +105,13 @@ export default function AmbassadorList() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [activeMenu])
 
+  if (loading) {
+    return <div className="p-8 text-slate-500">Loading ambassadors...</div>
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
       <div className="max-w-[1400px] mx-auto">
-        {/* Header */}
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
             <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Admin / Ambassadors</p>
@@ -64,7 +125,6 @@ export default function AmbassadorList() {
           </button>
         </div>
 
-        {/* Search & Filter Bar */}
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center rounded-3xl bg-white border border-slate-200 p-4">
           <div className="flex items-center gap-3 flex-1 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
             <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +133,7 @@ export default function AmbassadorList() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name"
+              placeholder="Search name or email"
               className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
             />
           </div>
@@ -83,23 +143,22 @@ export default function AmbassadorList() {
             className="rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
           >
             <option value="All">All Status</option>
-            <option value="Productive">Productive</option>
-            <option value="Suspended">Suspended</option>
-            <option value="Deactivated">Deactivated</option>
+            <option value="pending_approval">Pending Approval</option>
+            <option value="active">Productive</option>
+            <option value="suspended">Suspended</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
 
-        {/* Table */}
         <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-700">
               <thead className="bg-slate-100 text-slate-600">
                 <tr>
                   <th className="px-6 py-4 font-semibold">ID</th>
-                  <th className="px-6 py-4 font-semibold">Email</th>
+                  <th className="px-6 py-4 font-semibold">Name / Email</th>
                   <th className="px-6 py-4 font-semibold">Phone Number</th>
-                  <th className="px-6 py-4 font-semibold">Registration Date</th>
-                  <th className="px-6 py-4 font-semibold">Last Login</th>
+                  <th className="px-6 py-4 font-semibold">Registered</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
                   <th className="px-6 py-4 font-semibold">Action</th>
                 </tr>
@@ -110,16 +169,15 @@ export default function AmbassadorList() {
                     <td className="px-6 py-4 font-medium text-slate-900">{amb.id}</td>
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-slate-900">{amb.name}</div>
+                        <div className="font-medium text-slate-900">{amb.first_name} {amb.last_name}</div>
                         <div className="text-xs text-slate-500">{amb.email}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">{amb.phone}</td>
-                    <td className="px-6 py-4">{amb.regDate}</td>
-                    <td className="px-6 py-4">{amb.lastLogin}</td>
+                    <td className="px-6 py-4">{amb.phone || '—'}</td>
+                    <td className="px-6 py-4">{new Date(amb.created_at).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(amb.status)}`}>
-                        {amb.status}
+                        {statusLabels[amb.status] || amb.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -140,22 +198,31 @@ export default function AmbassadorList() {
                               <Eye size={16} />
                               View
                             </button>
-                            {amb.status !== 'Suspended' && (
+                            {amb.status === 'pending_approval' && (
+  <>
+    <button
+      onClick={() => handleApprove(amb.id)}
+      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-green-700 hover:bg-slate-50 transition-colors border-t border-slate-200"
+    >
+      <Eye size={16} />
+      Approve
+    </button>
+    <button
+      onClick={() => handleReject(amb.id)}
+      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-700 hover:bg-slate-50 transition-colors border-t border-slate-200"
+    >
+      <XCircle size={16} />
+      Reject
+    </button>
+  </>
+)}
+                            {amb.status === 'active' && (
                               <button
-                                onClick={() => handleStatusChange(amb.id, 'Suspended')}
-                                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200"
+                                onClick={() => handleSuspend(amb.id)}
+                                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200 last:rounded-b-xl"
                               >
                                 <Ban size={16} />
                                 Suspend
-                              </button>
-                            )}
-                            {amb.status !== 'Deactivated' && (
-                              <button
-                                onClick={() => handleStatusChange(amb.id, 'Deactivated')}
-                                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200 last:rounded-b-xl"
-                              >
-                                <XCircle size={16} />
-                                Deactivate
                               </button>
                             )}
                           </div>

@@ -1,14 +1,49 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { images } from '../../assets/Photo';
+import { api } from '../../utils/apiClient';
 import EarningCards from './EarningCards';
 import { useNavigate } from 'react-router-dom';
 import ReferalActivities from '../../pages/ReferalActivities';
 
+function formatMoney(value) {
+  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(Number(value));
+}
+
+function percentChange(current, previous) {
+  const c = Number(current);
+  const p = Number(previous);
+  if (p === 0) return null;            // can't divide by zero; "no comparison" instead of a fake number
+  return Math.round(((c - p) / p) * 100);
+}
+
 export default function DashBody() {
+   console.log("DASHBODY FILE VERSION CHECK 1");
     const navigate = useNavigate();
+
+const [ambassador, setAmbassador] = useState(null);
+const [stats, setStats] = useState(null);
+const [loadingAmbassador, setLoadingAmbassador] = useState(true);
+
+useEffect(() => {
+  async function fetchDashboard() {
+    try {
+      const [meRes, statsRes] = await Promise.all([
+        api.get('/api/ambassadors/me'),
+        api.get('/api/ambassadors/me/stats'),
+      ]);
+      setAmbassador(meRes.data.ambassador);
+      setStats(statsRes.data.stats);
+    } catch (err) {
+      setAmbassador(null);
+    } finally {
+      setLoadingAmbassador(false);
+    }
+  }
+  fetchDashboard();
+}, []);
+
     const [copy, setCopy] = useState(false)
-    const referralLink = "https://viaggioabroad.com/signup?ref=your-referral-code";
-    const ShareUrl = encodeURIComponent(referralLink)
+  
     const handleCopy =()=>{
         navigator.clipboard.writeText(referralLink);
         setCopy(true)
@@ -16,16 +51,41 @@ export default function DashBody() {
             setCopy(false)
         }, 2000)
     }
-    const handleEmail = ()=>{
-        window.location.href=`mailto:?subject=Join Viaggio Abroad&body=Hey! I found this amazing platform called Viaggio Abroad that offers incredible travel experiences. I think you'd love it! Use my referral link to sign up and get started: ${referralLink}`;
-    }
+   const handleEmail = () => {
+  window.location.href = `mailto:?subject=Join Travora&body=Hey! I found Travora, a platform that offers incredible travel experiences. I think you'd love it! Use my referral link to sign up and get started: ${referralLink}`;
+};
     const handleFacebookShare = () => {
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${ShareUrl}`, "_blank");
 };
 const handleTwitterShare = () => {
-  window.open(`https://twitter.com/intent/tweet?text="Join Viaggio Abroad! I found this amazing platform called Viaggio Abroad that offers incredible travel experiences. I think you'd love it! Use my referral link to sign up and get started: ${referralLink}"&url=${ShareUrl}`, "_blank");
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent("Join Travora! Incredible travel experiences. Sign up with my referral link: ")}&url=${ShareUrl}`, "_blank");
 };
-    console.log("im working")
+    
+if (loadingAmbassador) {
+  return <div className="p-8 text-gray-500">Loading your dashboard...</div>;
+}
+
+if (!ambassador || ambassador.status !== 'active') {
+  return (
+    <div className="w-full max-w-[1580px] mx-auto min-h-screen px-4 sm:px-6 lg:px-8 py-10">
+      <div className="bg-white rounded-3xl shadow-md p-10 text-center max-w-xl mx-auto">
+        <h1 className="text-2xl font-bold text-[#333232] mb-3">
+          {ambassador?.status === 'rejected' ? 'Application Not Approved' : 'Application Under Review'}
+        </h1>
+        <p className="text-gray-600">
+          {ambassador?.status === 'rejected'
+            ? 'Your ambassador application was not approved. Contact support if you think this is a mistake.'
+            : 'Thanks for applying! An admin is reviewing your ambassador application. You\'ll get full dashboard access once approved.'}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+  
+    const referralLink = `${window.location.origin}/signup?ref=${ambassador.referral_code}`;
+    const ShareUrl = encodeURIComponent(referralLink)
+
   return (
     <div className='w-full max-w-[1580px] mx-auto min-h-screen rounded-t-[5px] px-4 sm:px-6 lg:px-8'>
       <div className=''>
@@ -39,8 +99,8 @@ const handleTwitterShare = () => {
      }}>
                     {/*text content*/}
                     <div className='space-y-6 px-4 py-6 md:px-10 lg:px-16 md:py-10 lg:py-16 flex flex-col gap-2 w-full lg:max-w-[560px]'>
-                      <p className="text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]">Refer your friends to viaggio Abroad, earn a commission for referral</p>
-                      <p className='text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]'>invite & Earn with viaggio abroad! Share your unique referral link. Earn 10% when your referral subscribe. Start building your passive income.</p>
+                      <p className="text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]">Refer your friends to Travora and earn a commission for every successful referral.</p>
+                      <p className='text-[#FFFFFF] w-full max-w-[560px] text-base md:text-[20px] leading-[150%]'>Invite & earn with Travora! Share your unique referral link and get rewarded when your referrals book a consultation. Start building your passive income.</p>
                     </div>
                     {/*illustration*/}
                     <div className='w-full lg:w-[560px] px-4 py-6'>
@@ -63,7 +123,7 @@ const handleTwitterShare = () => {
         />
         <button
           onClick={handleCopy}
-          className="px-6 py-3 bg-[#345867] text-white font-semibold rounded-lg hover:bg-[#2a4755] transition"
+          className="px-2 md:px-6 py-3 bg-[#345867] text-white font-semibold rounded-lg hover:bg-[#2a4755] transition"
         >
           {copy ? "COPIED!" : "COPY"}
         </button>
@@ -202,41 +262,40 @@ const handleTwitterShare = () => {
 </div>
         </div>
       <div>
-  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 py-4 w-full'>
-    {/* Card 1 - Earnings this month */}
-    <EarningCards
-      title="Earnings this month"
-      amount="$142.15"
-      percentageChange={3}
-      subText="vs previous month"
-      isActive={true}
-    />
+ <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 py-4 w-full'>
+  {/* Card 1 - Earnings this month */}
+  <EarningCards
+    title="Earnings this month"
+    amount={formatMoney(stats?.earningsThisMonth ?? 0)}
+    percentageChange={percentChange(stats?.earningsThisMonth, stats?.earningsLastMonth)}
+    subText={Number(stats?.earningsLastMonth) === 0 ? 'No earnings last month' : 'vs previous month'}
+    isActive={true}
+  />
 
-    {/* Card 2 - Total earnings */}
-    <EarningCards
-      title="Total earnings (All-time)"
-      amount="$1,245.78"
-      percentageChange={0}
-      subText=""
-    />
+  {/* Card 2 - Total earnings */}
+  <EarningCards
+    title="Total earnings (All-time)"
+    amount={formatMoney(stats?.totalEarnings ?? 0)}
+    subText="Approved and paid commissions"
+  />
 
-    {/* Card 3 - Referrals */}
-    <EarningCards
-      title="Referrals this month"
-      amount="5"
-      percentageChange={-21}
-      subText="vs previous period"
-    />
+  {/* Card 3 - Referrals */}
+  <EarningCards
+    title="Referrals this month"
+    amount={String(stats?.referralsThisMonth ?? 0)}
+    percentageChange={percentChange(stats?.referralsThisMonth, stats?.referralsLastMonth)}
+    subText={Number(stats?.referralsLastMonth) === 0 ? 'No referrals last month' : 'vs previous month'}
+  />
 
-    {/* Card 4 - Current Earnings with button */}
-    <EarningCards
-      title="Current Earning4"
-      amount="$132.45"
-      showButton={true}
-      buttonText="Check Earning"
-      onButtonClick={() => navigate("/ambassador-reward")}
-    />
-  </div>
+  {/* Card 4 - Available balance with button */}
+  <EarningCards
+    title="Available balance"
+    amount={formatMoney(stats?.availableBalance ?? 0)}
+    showButton={true}
+    buttonText="Check Earning"
+    onButtonClick={() => navigate("/ambassador-reward")}
+  />
+</div>
 </div>
     </div>
     </div>

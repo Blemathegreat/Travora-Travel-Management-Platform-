@@ -6,6 +6,7 @@ import About from './pages/About'
 import Service from './pages/Services'
 import Consultation from './pages/Consultation'
 import Contact from './pages/Contact'
+import AdminCommissions from './pages/admin/AdminCommissions';
 import Blog from './pages/Blog'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -17,6 +18,7 @@ import ReferalActivities from './pages/ReferalActivities'
 import AmbassordorReward from './pages/AmbassadorReward'
 import AdminConsultationSettings from "./pages/admin/AdminConsultationsSettings"
 
+import ProtectedRoute from './components/ProtectedRoute'
 
 import PublicLayout from './layout/PublicLayout'
 import AdminLayout from './layout/AdminLayout'
@@ -30,6 +32,7 @@ import Settings from './pages/admin/Settings'
 import AmbassadorOverview from './pages/admin/AmbassadorOverview'
 import AmbassadorList from './pages/admin/AmbassadorList'
 import AmbassadorDetail from './pages/admin/AmbassadorDetail'
+import AdminPayouts from './pages/admin/AdminPayouts'
 import ConsultationBookings from './pages/admin/ConsultationBookings'
 import Inbox from './pages/admin/Inbox'
 import FAQ from './pages/admin/FAQ'
@@ -38,28 +41,61 @@ import Users from './pages/admin/Users'
 export default function App() {
   return (
     <Routes>
-      
+
       <Route element={<PublicLayout />}>
         <Route path='/' element={<Home/>}/>
         <Route path='/consultation' element={<Consultation/>}/>
         <Route path='/contact' element={<Contact/>}/>
-        <Route path="/ambassador-reward" element={<AmbassordorReward/>}/> 
         <Route path='/blog' element={<Blog/>}/>
         <Route path='/blog/:id' element={<BlogDetail/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
         <Route path='/ambassador' element={<Ambassador/>}/>
-        <Route path='/ambassador/dashboard' element={<AmbassadorDashboard/>}/>
         <Route path='/partnership' element={<Partnership/>}/>
-        <Route path='/referal-activities' element={<ReferalActivities/>}/>
         <Route path='/about' element={<About/>}/>
         <Route path="/service" element={<Service/>}/>
+
+        {/* Ambassador-only pages */}
+        <Route
+          path='/ambassador/dashboard'
+          element={
+            <ProtectedRoute allowedRoles={['ambassador']}>
+              <AmbassadorDashboard/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ambassador-reward"
+          element={
+            <ProtectedRoute allowedRoles={['ambassador']}>
+              <AmbassordorReward/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/referal-activities'
+          element={
+            <ProtectedRoute allowedRoles={['ambassador']}>
+              <ReferalActivities/>
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
-      
-      <Route path="/admin" element={<AdminLayout/>}>
+
+      {/* Admin-only section: the gate wraps the layout, so every page inside is protected */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout/>
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<AdminDashboard/>}/> {/* /admin */}
         <Route path="dashboard" element={<AdminDashboard/>}/> {/* /admin/dashboard */}
+        <Route path="payouts" element={<AdminPayouts/>}/>
+        <Route path="commissions" element={<AdminCommissions />} />
         <Route path="consultation-settings" element={<AdminConsultationSettings/>}/>
         <Route path="consultation-bookings" element={<ConsultationBookings/>}/>
         <Route path="testimonials" element={<Testimonials/>}/>

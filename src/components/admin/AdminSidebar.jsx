@@ -9,13 +9,17 @@ import {
   Share2,
   Ticket,
   Ambulance,
+  Wallet,
+  Coins,
   Settings,
   LogOut,
   X,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AdminSidebar({ open, onClose }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const menuItems = [
@@ -27,8 +31,19 @@ export default function AdminSidebar({ open, onClose }) {
     { name: 'Blogpost', icon: Share2, path: '/admin/blog' },
     { name: 'Ticket', icon: Ticket, path: '/admin/tickets' },
     { name: 'Ambassador Overview', icon: Ambulance, path: '/admin/ambassadors' },
+     { name: 'Commissions', icon: Coins, path: '/admin/commissions' },
+    { name: 'Payouts', icon: Wallet, path: '/admin/payouts' },
     { name: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
+
+  const handleLogout = async () => {
+    setShowLogoutModal(false);
+    try {
+      await logout();
+    } finally {
+      navigate('/');
+    }
+  };
 
   return (
     <motion.aside
@@ -54,6 +69,7 @@ export default function AdminSidebar({ open, onClose }) {
           <NavLink
             key={index}
             to={item.path}
+            end={item.path === '/admin'}
             className={({ isActive }) =>
               `w-full flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-all ${
                 isActive
@@ -98,10 +114,7 @@ export default function AdminSidebar({ open, onClose }) {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setShowLogoutModal(false);
-                  navigate('/');
-                }}
+                onClick={handleLogout}
                 className="rounded-md bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
               >
                 Log out

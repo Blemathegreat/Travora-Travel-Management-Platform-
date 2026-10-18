@@ -103,7 +103,7 @@ export default function ReferralAnalysis() {
         </div>
         
         {/* Referrals and Distribution Section */}
-        <div className="flex flex-col md:flex-row items-center   gap-6 justify-between ">
+        <div className="flex flex-col lg:flex-row items-center gap-6 md:gap-10 lg:gap-[50px] justify-between ">
           
           {/* Referrals Card */}
           <div className="bg-white  p-6">
@@ -171,7 +171,7 @@ export default function ReferralAnalysis() {
           <div className="bg-white  p-6">
             <h2 className="text-base font-semibold text-[#333333] mb-6">Referral Distribution</h2>
             
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               
               {/* Referral Source */}
               <div className="flex flex-col items-center">
@@ -192,7 +192,7 @@ export default function ReferralAnalysis() {
                 </PieChart>
                 <div className="mt-3 space-y-1 text-xs w-full">
                   {referralSourceData.map((item, index) => (
-                    <div key={index} className="flex items-center h-[24px] gap-2.5">
+                    <div key={index} className="flex  flex-row items-center h-[24px] gap-2.5">
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
                       <span className="text-[#666666] w-[154px] h-[17px] text-[11px] leading-[16px]">{item.name}</span>
                     </div>
@@ -218,9 +218,9 @@ export default function ReferralAnalysis() {
                     ))}
                   </Pie>
                 </PieChart>
-                <div className="mt-3  flex items-center space-x-3 text-xs">
+                <div className="mt-3  flex flex-col sm:flex-row gap-3  items-center space-x-3 text-xs">
                   {genderData.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2.5">
+                    <div key={index} className="flex  items-center gap-2.5">
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
                       <span className="text-[#666666] text-[11px] leading-[150%] tracking-[0.5%]">{item.name}</span>
                     </div>
@@ -244,14 +244,14 @@ export default function ReferralAnalysis() {
                     ))}
                   </Pie>
                 </PieChart>
-                <div className="mt-3 grid grid-cols-2 space-x-4  space-y-1 text-sm">
-                  {ageData.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2.5 h-[24px]">
-                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
-                      <span className="text-[#666666]  leading-[150%] tracking-[0.5%]">{item.name}</span>
-                    </div>
-                  ))}
-                </div>
+                       <div className="mt-3 grid grid-cols-2 gap-x-10 gap-y-1 text-xs">
+  {ageData.map((item, index) => (
+    <div key={index} className="flex items-center h-[24px] gap-2.5">
+      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
+      <span className="text-[#666666] leading-[150%] tracking-[0.5%]">{item.name}</span>
+    </div>
+  ))}
+</div>
               </div>
               
               {/* Location */}

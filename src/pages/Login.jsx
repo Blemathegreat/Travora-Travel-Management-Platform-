@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { showSuccess } from '../utils/toastConfig';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { showSuccess, showError } from '../utils/toastConfig';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({ Email: '', Password: '' });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,7 +31,7 @@ export default function Login() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -39,20 +43,39 @@ export default function Login() {
     const hasErrors = Object.values(validationErrors).some(Boolean);
     setErrors(validationErrors);
 
-    if (!hasErrors) {
-      showSuccess('Welcome back! Redirecting to your dashboard...');
-      navigate('/ambassador/dashboard');
+    if (hasErrors) {
+      setIsSubmitting(false);
+      return;
     }
 
-    setIsSubmitting(false);
+    try {
+      const user = await login(formData.Email, formData.Password);
+
+      showSuccess('Welcome back! Redirecting to your dashboard...');
+
+      const redirectTo = location.state?.from?.pathname;
+      if (redirectTo) {
+        navigate(redirectTo);
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'ambassador') {
+        navigate('/ambassador/dashboard');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="w-full max-w-xl bg-white rounded-[40px] p-8 shadow-lg">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-[#012E41] mb-2">Ambassador Login</h1>
-          <p className="text-gray-600">Sign in to access your dashboard and campaign analytics.</p>
+          <h1 className="text-3xl font-bold text-[#012E41] mb-2">Welcome Back</h1>
+          <p className="text-gray-600">Sign in to access your dashboard.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -93,6 +116,10 @@ export default function Login() {
 
         <p className="mt-6 text-center text-sm text-gray-600">
           New here?{' '}
+          <Link to="/signup" className="font-semibold text-[#345867] hover:underline">
+            Create an account
+          </Link>
+          {' · '}
           <Link to="/ambassador" className="font-semibold text-[#345867] hover:underline">
             Register as Ambassador
           </Link>

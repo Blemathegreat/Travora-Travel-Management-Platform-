@@ -9,15 +9,19 @@ import 'react-toastify/dist/ReactToastify.css'
 import { BlogProvider } from './context/BlogContext'
 import { AmbassadorProvider } from './context/AmbassadorContext'
 
+import { AuthProvider } from './context/AuthContext'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      <AuthProvider>
       <BlogProvider>
         <AmbassadorProvider>
           <App />
         </AmbassadorProvider>
       </BlogProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

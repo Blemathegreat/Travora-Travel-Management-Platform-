@@ -1,45 +1,90 @@
-import React, { useState } from 'react';
-import { images, payoutHistory } from '../../assets/Photo'; 
+import React, { useState, useEffect } from 'react';
+import { images } from '../../assets/Photo';
+import { api } from '../../utils/apiClient';
+import { showSuccess, showError } from '../../utils/toastConfig';
 import AccountSetupModal from './AccountSetupModal';
 import PayoutModal from './PayoutModal';
 
+// The database stores keys like 'bank_transfer'; people should read friendly words.
+const methodLabels = {
+  bank_transfer: 'bank account',
+  mobile_money: 'mobile money wallet',
+  paypal: 'PayPal account',
+  crypto: 'crypto wallet',
+};
+
+function formatMoney(value) {
+  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(Number(value));
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
 export default function AmbassadorRewards() {
-  // ═══════════════════════════════════════════════════════════════════════════
-  // STATE MANAGEMENT
-  // ═══════════════════════════════════════════════════════════════════════════
+  // ═══════════ STATE ═══════════
+  const [rewards, setRewards] = useState(null);       // everything from the server
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [requesting, setRequesting] = useState(false);
+
   const [activeTab, setActiveTab] = useState('all');
-  const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
   const [showAll, setShowAll] = useState(false);
-  
-  // Modal states
+
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
   const [isAccountSetupModalOpen, setIsAccountSetupModalOpen] = useState(false);
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // CONSTANTS
-  // ═══════════════════════════════════════════════════════════════════════════
-  const PREVIEW_COUNT = 3;
-  const years = ['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019'];
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // HELPER FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Extract year from date string (e.g., "December 15, 2026" -> "2026")
-  const getYearFromDate = (dateString) => dateString.split(', ')[1];
-
-  // Filter history by year and tab type
-  const getFilteredHistory = () => {
-    let filtered = payoutHistory.filter(
-      (item) => getYearFromDate(item.date) === selectedYear
-    );
-    
-    if (activeTab === 'deposits') {
-      filtered = filtered.filter((i) => i.type === 'deposit');
-    } else if (activeTab === 'transfers') {
-      filtered = filtered.filter((i) => i.type === 'transfer');
+  // ═══════════ LOAD DATA ═══════════
+  const loadRewards = async () => {
+    try {
+      const res = await api.get('/api/ambassadors/me/rewards');
+      setRewards(res.data.rewards);
+      setLoadError('');
+    } catch (err) {
+      setLoadError(err.message);
+    } finally {
+      setLoading(false);
     }
-    
+  };
+
+  useEffect(() => {
+    loadRewards();
+  }, []);
+
+  // ═══════════ EARLY RETURNS (after all hooks) ═══════════
+  if (loading) {
+    return <div className="p-8 text-gray-500">Loading your rewards...</div>;
+  }
+
+  if (loadError || !rewards) {
+    return (
+      <div className="p-8">
+        <p className="text-red-500 mb-3">{loadError || 'Could not load your rewards.'}</p>
+        <button
+          onClick={() => { setLoading(true); loadRewards(); }}
+          className="px-4 py-2 bg-[#456573] text-white rounded-lg"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  // ═══════════ DERIVED VALUES ═══════════
+  const { availableBalance, payoutMethod, payoutSetup, hasOpenPayout, history } = rewards;
+
+  const PREVIEW_COUNT = 3;
+  const currentYear = String(new Date().getFullYear());
+  const years = [...new Set([currentYear, ...history.map((i) => String(new Date(i.date).getFullYear()))])]
+    .sort((a, b) => b - a);
+
+  const getFilteredHistory = () => {
+    let filtered = history.filter(
+      (item) => String(new Date(item.date).getFullYear()) === selectedYear
+    );
+    if (activeTab === 'deposits') filtered = filtered.filter((i) => i.type === 'deposit');
+    else if (activeTab === 'transfers') filtered = filtered.filter((i) => i.type === 'transfer');
     return filtered;
   };
 
@@ -47,68 +92,56 @@ export default function AmbassadorRewards() {
   const visibleHistory = showAll ? filteredHistory : filteredHistory.slice(0, PREVIEW_COUNT);
   const hasMore = filteredHistory.length > PREVIEW_COUNT;
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // EVENT HANDLERS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Handle year change and collapse list
-  const handleYearChange = (year) => {
-    setSelectedYear(year);
-    setShowAll(false);
+  // ═══════════ HANDLERS ═══════════
+  const handleYearChange = (year) => { setSelectedYear(year); setShowAll(false); };
+  const handleTabChange = (tab) => { setActiveTab(tab); setShowAll(false); };
+  const toggleShowAll = () => setShowAll((prev) => !prev);
+
+  const openPayoutModal = () => setIsPayoutModalOpen(true);
+  const closePayoutModal = () => setIsPayoutModalOpen(false);
+  const continueToAccountSetup = () => { setIsPayoutModalOpen(false); setIsAccountSetupModalOpen(true); };
+  const closeAccountSetupModal = () => setIsAccountSetupModalOpen(false);
+  const backToPayoutModal = () => { setIsAccountSetupModalOpen(false); setIsPayoutModalOpen(true); };
+
+  const handleRequestPayout = async () => {
+    const ok = window.confirm(
+      `Request a payout of ${formatMoney(availableBalance)} to your ${methodLabels[payoutMethod]}?`
+    );
+    if (!ok) return;
+
+    setRequesting(true);
+    try {
+      await api.post('/api/ambassadors/payouts', {});
+      showSuccess('Payout requested! We will review it shortly.');
+      await loadRewards();            // refresh balance, history and button
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      setRequesting(false);
+    }
   };
 
-  // Handle tab change and collapse list
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setShowAll(false);
-  };
+  // ═══════════ WHICH BUTTON DO WE SHOW? ═══════════
+  let mainButton;
+  if (!payoutSetup) {
+    mainButton = { label: 'Continue', disabled: false, onClick: openPayoutModal };
+  } else if (hasOpenPayout) {
+    mainButton = { label: 'Payout in progress', disabled: true, onClick: undefined };
+  } else if (Number(availableBalance) <= 0) {
+    mainButton = { label: 'No funds available yet', disabled: true, onClick: undefined };
+  } else {
+    mainButton = {
+      label: requesting ? 'Requesting...' : `Request payout of ${formatMoney(availableBalance)}`,
+      disabled: requesting,
+      onClick: handleRequestPayout,
+    };
+  }
 
-  // Toggle view all/show less
-  const toggleShowAll = () => {
-    setShowAll((prev) => !prev);
-  };
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // MODAL HANDLERS
-  // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Open first modal (Payout Terms)
-  const openPayoutModal = () => {
-    setIsPayoutModalOpen(true);
-  };
-
-  // Close first modal
-  const closePayoutModal = () => {
-    setIsPayoutModalOpen(false);
-  };
-
-  // Continue from first modal to second modal (Account Setup)
-  const continueToAccountSetup = () => {
-    setIsPayoutModalOpen(false);
-    setIsAccountSetupModalOpen(true);
-  };
-
-  // Close second modal
-  const closeAccountSetupModal = () => {
-    setIsAccountSetupModalOpen(false);
-  };
-
-  // Go back from second modal to first modal
-  const backToPayoutModal = () => {
-    setIsAccountSetupModalOpen(false);
-    setIsPayoutModalOpen(true);
-  };
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // RENDER
-  // ═══════════════════════════════════════════════════════════════════════════
+  // ═══════════ RENDER ═══════════
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
-      
-      {/* ══════════════════════════════════════════════════════════════════════
-          MODALS
-      ══════════════════════════════════════════════════════════════════════ */}
-      <PayoutModal 
+
+      <PayoutModal
         isOpen={isPayoutModalOpen}
         onClose={closePayoutModal}
         onContinue={continueToAccountSetup}
@@ -118,92 +151,82 @@ export default function AmbassadorRewards() {
         isOpen={isAccountSetupModalOpen}
         onClose={closeAccountSetupModal}
         onBack={backToPayoutModal}
+        onSaved={loadRewards}
       />
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-7xl mx-auto">
-        
-        {/* Page Header */}
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8">
-          Rewards
-        </h1>
 
-        {/* Two Column Layout */}
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8">Rewards</h1>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* ════════════════════════════════════════════════════════════════
-              LEFT CARD - Current Rewards Balance
-          ════════════════════════════════════════════════════════════════ */}
+          {/* LEFT CARD - Current Rewards Balance */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            
-            {/* Balance Header */}
-            <h2 className="text-sm font-semibold text-gray-700 mb-1">
-              Current Rewards Balance
-            </h2>
-            <p className="text-xs text-gray-500 mb-2">
-              Transferable Amount
-            </p>
-            <p className="text-3xl font-bold text-gray-800 mb-6">
-              $132.45
-            </p>
 
-            {/* Setup Account Banner */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-4 flex flex-col sm:flex-row items-start shadow-sm gap-4">
-              <div className="hidden sm:block flex-shrink-0">
-                <div className="h-[70px] w-[70px] bg-teal-100 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={images.benance} 
-                    alt="Bank icon" 
-                    className="w-full h-full object-cover" 
-                  />
+            <h2 className="text-sm font-semibold text-gray-700 mb-1">Current Rewards Balance</h2>
+            <p className="text-xs text-gray-500 mb-2">Transferable Amount</p>
+            <p className="text-3xl font-bold text-gray-800 mb-6">{formatMoney(availableBalance)}</p>
+
+            {!payoutSetup ? (
+              <div className="bg-gray-50 rounded-lg p-4 mb-4 flex flex-col sm:flex-row items-start shadow-sm gap-4">
+                <div className="hidden sm:block flex-shrink-0">
+                  <div className="h-[70px] w-[70px] bg-teal-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    <img src={images.benance} alt="Bank icon" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <p className="text-sm font-semibold text-gray-800 mb-1">
+                    Set up your payout account to get paid
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    To get paid, you'll need to set up your payout account.
+                    It should only take a few minutes.
+                  </p>
                 </div>
               </div>
-              <div className="w-full">
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-4 mb-4 shadow-sm">
                 <p className="text-sm font-semibold text-gray-800 mb-1">
-                  Set up your payout account to get paid
+                  Payouts go to your {methodLabels[payoutMethod]}
                 </p>
-                <p className="text-xs text-gray-500">
-                  To get paid, you'll need to set up your payout account. 
-                  It should only take a few minutes.
-                </p>
+                <button
+                  onClick={() => setIsAccountSetupModalOpen(true)}
+                  className="text-xs text-[#456573] hover:underline font-medium"
+                >
+                  Change payout details
+                </button>
               </div>
-            </div>
+            )}
 
-            {/* Continue Button - Opens Modal */}
             <button
-              onClick={openPayoutModal}
-              className="w-full bg-[#456573] hover:bg-[#3a5461] text-white font-medium py-3 rounded-lg transition-colors"
+              onClick={mainButton.onClick}
+              disabled={mainButton.disabled}
+              className={`w-full font-medium py-3 rounded-lg transition-colors ${
+                mainButton.disabled
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-[#456573] hover:bg-[#3a5461] text-white'
+              }`}
             >
-              Continue
+              {mainButton.label}
             </button>
           </div>
 
-          {/* ════════════════════════════════════════════════════════════════
-              RIGHT CARD - Payout History
-          ════════════════════════════════════════════════════════════════ */}
+          {/* RIGHT CARD - Payout History */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            
-            {/* Header with Year Dropdown */}
+
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-gray-700">
-                Payout History
-              </h2>
+              <h2 className="text-sm font-semibold text-gray-700">Payout History</h2>
               <select
                 value={selectedYear}
                 onChange={(e) => handleYearChange(e.target.value)}
                 className="bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 cursor-pointer hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
 
-            {/* Filter Tabs */}
             <div className="flex gap-2 mb-4">
               {[
                 { key: 'all', label: 'All' },
@@ -224,7 +247,6 @@ export default function AmbassadorRewards() {
               ))}
             </div>
 
-            {/* Transaction List */}
             <div className="space-y-3">
               {visibleHistory.map((item) => (
                 <div
@@ -233,24 +255,19 @@ export default function AmbassadorRewards() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-xs">—</span>
+                      <span className="text-white text-xs">{item.type === 'deposit' ? '+' : '−'}</span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {item.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {item.date}
-                      </p>
+                      <p className="text-sm font-medium text-gray-800">{item.name}</p>
+                      <p className="text-xs text-gray-500">{formatDate(item.date)}</p>
                     </div>
                   </div>
-                  <p className="text-sm font-semibold text-teal-600">
-                    + ${item.amount.toFixed(2)}
+                  <p className={`text-sm font-semibold ${item.type === 'deposit' ? 'text-teal-600' : 'text-gray-700'}`}>
+                    {item.type === 'deposit' ? '+ ' : '− '}{formatMoney(item.amount)}
                   </p>
                 </div>
               ))}
 
-              {/* Empty State */}
               {filteredHistory.length === 0 && (
                 <p className="text-center text-gray-500 text-sm py-8">
                   No payout history available for {selectedYear}
@@ -258,31 +275,20 @@ export default function AmbassadorRewards() {
               )}
             </div>
 
-            {/* View All / Show Less Button */}
             {hasMore && (
               <div className="mt-4 text-center">
                 <button
                   onClick={toggleShowAll}
                   className="text-sm text-gray-600 hover:text-gray-800 font-medium inline-flex items-center gap-1 transition-colors"
                 >
-                  {showAll 
-                    ? 'Show less' 
-                    : `View all (${filteredHistory.length})`
-                  }
+                  {showAll ? 'Show less' : `View all (${filteredHistory.length})`}
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      showAll ? 'rotate-180' : ''
-                    }`}
+                    className={`w-4 h-4 transition-transform ${showAll ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M19 9l-7 7-7-7" 
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
               </div>

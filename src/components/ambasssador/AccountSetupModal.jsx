@@ -1,7 +1,27 @@
 import React, { useState } from 'react';
-import { showSuccess } from '../../utils/toastConfig';
+import { showSuccess, showError } from '../../utils/toastConfig';
+import { api } from '../../utils/apiClient';
 
-export default function AccountSetupModal({ isOpen, onClose, onBack }) {
+// The form shows friendly labels; the database/API uses these exact keys.
+function buildPayload(f) {
+  switch (f.paymentMethod) {
+    case 'Mobile Money':
+      return { payoutMethod: 'mobile_money', details: { network: f.network, mobileNumber: f.mobileNumber } };
+    case 'Bank Transfer':
+      return { payoutMethod: 'bank_transfer', details: { bankName: f.bankName, accountNumber: f.accountNumber } };
+    case 'PayPal':
+      return { payoutMethod: 'paypal', details: { paypalEmail: f.paypalEmail } };
+    case 'Crypto':
+      return { payoutMethod: 'crypto', details: { network: f.cryptoNetwork, walletAddress: f.walletAddress } };
+    default:
+      return null;
+  }
+}
+
+
+
+
+export default function AccountSetupModal({ isOpen, onClose, onBack, onSaved }) {
   // ═══════════════════════════════════════════════════════════════════════════
   // STATE
   // ═══════════════════════════════════════════════════════════════════════════
@@ -14,8 +34,14 @@ export default function AccountSetupModal({ isOpen, onClose, onBack }) {
     paypalEmail: '',
     walletAddress: ''
   });
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const cryptoNetworks = [
+  { value: 'USDT_TRC20', label: 'USDT (TRC20)' },
+  { value: 'USDT_BEP20', label: 'USDT (BEP20)' },
+  { value: 'BTC', label: 'Bitcoin' },
+];
 
   // Don't render if modal is not open
   if (!isOpen) return null;
@@ -99,15 +125,22 @@ export default function AccountSetupModal({ isOpen, onClose, onBack }) {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      console.log('Form submitted successfully:', formData);
-      showSuccess(`Account linked successfully! Using ${formData.paymentMethod}.`);
-      onClose();
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  setIsSubmitting(true);
+  try {
+    await api.put('/api/ambassadors/me/payout-setup', buildPayload(formData));
+    showSuccess(`Payout details saved! Using ${formData.paymentMethod}.`);
+    onSaved?.();
+    onClose();
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // ═══════════════════════════════════════════════════════════════════════════
   // RENDER
@@ -261,34 +294,52 @@ export default function AccountSetupModal({ isOpen, onClose, onBack }) {
             )}
 
             {/* ═══════════ CRYPTO FIELD ═══════════ */}
-            {formData.paymentMethod === 'Crypto' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Wallet Address
-                </label>
-                <input
-                  type="text"
-                  name="walletAddress"
-                  value={formData.walletAddress}
-                  onChange={handleChange}
-                  placeholder="Enter your crypto wallet address"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#456573]"
-                />
-                {errors.walletAddress && (
-                  <p className="text-xs text-red-500 mt-1">{errors.walletAddress}</p>
-                )}
-              </div>
-            )}
+          {formData.paymentMethod === 'Crypto' && (
+  <>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Network</label>
+      <select
+        name="cryptoNetwork"
+        value={formData.cryptoNetwork}
+        onChange={handleChange}
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#456573]"
+      >
+        {cryptoNetworks.map((n) => (
+          <option key={n.value} value={n.value}>{n.label}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Wallet Address</label>
+      <input
+        type="text"
+        name="walletAddress"
+        value={formData.walletAddress}
+        onChange={handleChange}
+        placeholder="Enter your crypto wallet address"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#456573]"
+      />
+      {errors.walletAddress && (
+        <p className="text-xs text-red-500 mt-1">{errors.walletAddress}</p>
+      )}
+      <p className="text-xs text-gray-500 mt-1">
+        Make sure the network matches your wallet. Funds sent to the wrong network cannot be recovered.
+      </p>
+    </div>
+  </>
+)}
 
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full mt-6 bg-[#456573] hover:bg-[#3a5461] text-white font-semibold py-3 rounded-lg transition-colors"
-          >
-            Link Account
-          </button>
+         <button
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full mt-6 bg-[#456573] hover:bg-[#3a5461] text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-60"
+>
+  {isSubmitting ? 'Saving...' : 'Link Account'}
+</button>
         </form>
       </div>
     </div>
