@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+
 import { motion } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { api } from '../../utils/apiClient';
+import usePolling from '../../hooks/usePolling';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
+   CalendarCheck,
   Users,
   FileText,
   Inbox,
@@ -21,13 +25,30 @@ export default function AdminSidebar({ open, onClose }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+const refreshUnread = useCallback(async () => {
+  const res = await api.get('/api/inbox/admin/unread-count');
+  setUnread((res?.data ?? res).unread || 0);
+}, []);
+
+useEffect(() => { refreshUnread().catch(() => {}); }, [refreshUnread]);
+usePolling(refreshUnread, 15000);
+
+// the Inbox page shouts this when it marks messages as read
+useEffect(() => {
+  const refresh = () => refreshUnread().catch(() => {});
+  window.addEventListener('admin-inbox:changed', refresh);
+  return () => window.removeEventListener('admin-inbox:changed', refresh);
+}, [refreshUnread]);
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
+   { name: 'Users', icon: Users, path: '/admin/users' },   
     { name: 'Consultation Bookings', icon: Users, path: '/admin/consultation-bookings' },
     { name: 'Testimonial', icon: FileText, path: '/admin/testimonials' },
     { name: 'FAQ', icon: FileText, path: '/admin/faq' },
-    { name: 'Inbox', icon: Inbox, path: '/admin/inbox' },
+    { name: 'Inbox', icon: Inbox, path: '/admin/inbox', badge: unread },
     { name: 'Blogpost', icon: Share2, path: '/admin/blog' },
     { name: 'Ticket', icon: Ticket, path: '/admin/tickets' },
     { name: 'Ambassador Overview', icon: Ambulance, path: '/admin/ambassadors' },
@@ -81,6 +102,11 @@ export default function AdminSidebar({ open, onClose }) {
           >
             <item.icon size={20} />
             <span className="text-[14px] leading-[150%] h-[21px] font-medium text-[#1C1C1C]">{item.name}</span>
+            {item.badge > 0 && (
+  <span className="ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center">
+    {item.badge > 99 ? '99+' : item.badge}
+  </span>
+)}
           </NavLink>
         ))}
 

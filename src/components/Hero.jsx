@@ -4,7 +4,6 @@ import { images } from '../assets/Photo'
 import Logo from "./Logo.jsx"
 import {NavLink} from "react-router-dom"
 
-
 export default function Hero() {
   return (
     <div className="bg-cover bg-no-repeat bg-center min-h-[720px] md:min-h-screen w-full" style={{ backgroundImage: `url(${images.background})` }}>

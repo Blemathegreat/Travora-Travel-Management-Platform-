@@ -1,7 +1,8 @@
 // src/pages/BlogDetail.jsx
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import BlogCard from "./BlogCard";
-import { useBlogContext } from "../../context/BlogContext";
+import { api } from "../../utils/apiClient";
+import { cdn } from "../../utils/image";
 import { showSuccess, showError } from '../../utils/toastConfig';
 import { 
   Share2,  
@@ -12,17 +13,60 @@ import {
 
 const BlogDetail = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const { getBlogById, blogs } = useBlogContext();
-  const blog = getBlogById(id);
+  const { slug } = useParams();
+  const [blog, setBlog] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [popular, setPopular] = useState([]);
+  const [status, setStatus] = useState("loading"); // loading | ready | missing | error
+
+  // Fetch the post whenever the address (slug) changes
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("loading");
+    api
+      .get(`/api/blog/posts/${slug}`)
+      .then((res) => {
+        if (cancelled) return;
+        const data = res?.data ?? res;
+        setBlog(data.post);
+        setRelated(data.related || []);
+        setPopular(data.popular || []);
+        setStatus("ready");
+        window.scrollTo({ top: 0 });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setStatus(/not found/i.test(err.message) ? "missing" : "error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (status === "loading") {
+    return (
+      <div className="p-6 max-w-4xl mx-auto animate-pulse space-y-4">
+        <div className="h-12 w-3/4 bg-gray-200 rounded" />
+        <div className="h-64 bg-gray-200 rounded-2xl" />
+        <div className="h-4 w-full bg-gray-100 rounded" />
+        <div className="h-4 w-5/6 bg-gray-100 rounded" />
+      </div>
+    );
+  }
 
   // Handle case where blog is not found
-  if (!blog) {
+  if (status !== "ready" || !blog) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <h1 className="text-2xl font-bold text-red-800 mb-2">Blog Not Found</h1>
-          <p className="text-red-600">The blog post you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-red-800 mb-2">
+            {status === "missing" ? "Blog Not Found" : "Something went wrong"}
+          </h1>
+          <p className="text-red-600">
+            {status === "missing"
+              ? "The blog post you're looking for doesn't exist."
+              : "We could not load this post. Please try again."}
+          </p>
         </div>
       </div>
     );
@@ -33,7 +77,7 @@ const BlogDetail = () => {
   const encodedUrl = encodeURIComponent(currentUrl);
   const encodedTitle = encodeURIComponent(blog.title || '');
   const encodedSummary = encodeURIComponent(
-    blog.summary || blog.blogDetails?.substring(0, 150) || ''
+    blog.excerpt || blog.content?.substring(0, 150) || ''
   );
 
   // Social share handlers
@@ -55,16 +99,6 @@ const BlogDetail = () => {
     }
   };
 
-  // RELATED POSTS - with null safety
-  const related = blogs.filter(
-    b => b.category === blog.category && b.id !== blog.id
-  ).slice(0, 3);
-
-  // POPULAR POSTS
-  const popular = [...blogs]
-    .sort((a, b) => (b.views || 0) - (a.views || 0))
-    .slice(0, 3);
-
   return (
     <div className="min-h-screen bg-slate-50">
       <div className=" max-w-[1600px] mx-auto px-6 py-10">
@@ -79,9 +113,9 @@ const BlogDetail = () => {
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                  {blog.date && <span className="font-medium">{blog.date.toLocaleDateString()}</span>}
+                  {blog.publishedAt && <span className="font-medium">{new Date(blog.publishedAt).toLocaleDateString()}</span>}
                   <span className="text-gray-400">•</span>
-                  <span className="font-medium">{blog.readTime || '4 min read'}</span>
+                  <span className="font-medium">{blog.readMinutes} min read</span>
                   {blog.category && (
                     <span className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 text-xs font-semibold border border-blue-200">
                       {blog.category}
@@ -91,10 +125,10 @@ const BlogDetail = () => {
               </header>
 
               {/* Featured Image */}
-              {blog.image && (
+              {blog.coverImageUrl && (
                 <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
                   <img
-                    src={blog.image}
+                    src={cdn(blog.coverImageUrl, 1400)}
                     alt={blog.title}
                     className="w-full h-64 lg:h-80 xl:h-96 object-cover hover:scale-105 transition-transform duration-300"
                   />
@@ -102,10 +136,10 @@ const BlogDetail = () => {
               )}
 
               {/* Blog Content */}
-              {blog.blogDetails && (
+              {blog.content && (
                 <div className="prose prose-lg xl:prose-xl max-w-none text-gray-700 leading-relaxed">
                   <div className="whitespace-pre-line text-base lg:text-lg">
-                    {blog.blogDetails}
+                    {blog.content}
                   </div>
                 </div>
               )}
@@ -189,11 +223,11 @@ const BlogDetail = () => {
    <h2 className="text-xl font-bold mb-6 text-gray-900">Popular Posts</h2>
   <div className="space-y-6">
     {popular.map(item => (
-      <div key={item.id} className="flex gap-4 group cursor-pointer">
+      <div key={item.id} onClick={() => navigate(`/blog/${item.slug}`)} className="flex gap-4 group cursor-pointer">
         {/* Image */}
         <div className="flex-shrink-0 w-32 h-24 overflow-hidden rounded">
           <img 
-            src={item.image || '/placeholder.jpg'} 
+            src={cdn(item.coverImageUrl, 300) || '/placeholder.jpg'} 
             alt={item.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -203,9 +237,9 @@ const BlogDetail = () => {
         <div className="flex-1">
           {/* Category and Read Time */}
           <div className="flex items-center gap-2 text-xs text-gray-500 uppercase mb-2">
-            <span>{item.category || 'PRODUCT'}</span>
+            <span>{item.category}</span>
             <span>•</span>
-            <span>{item.readTime || '4 MINUTE READ'}</span>
+            <span>{item.readMinutes} MIN READ</span>
           </div>
           
           {/* Title */}
@@ -215,7 +249,7 @@ const BlogDetail = () => {
           
           {/* Excerpt */}
           <p className="text-sm text-gray-600 line-clamp-2">
-            {item.excerpt || item.blogDetails?.substring(0, 120) + '...'}
+            {item.excerpt}
           </p>
         </div>
       </div>
@@ -229,11 +263,11 @@ const BlogDetail = () => {
   </h2>
   <div className="space-y-6">
     {related.map(item => (
-      <div key={item.id} className="flex gap-4 group cursor-pointer">
+      <div key={item.id} onClick={() => navigate(`/blog/${item.slug}`)} className="flex gap-4 group cursor-pointer">
         {/* Image */}
         <div className="flex-shrink-0 w-32 h-24 overflow-hidden rounded">
           <img 
-            src={item.image || '/placeholder.jpg'} 
+            src={cdn(item.coverImageUrl, 300) || '/placeholder.jpg'} 
             alt={item.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -243,9 +277,9 @@ const BlogDetail = () => {
         <div className="flex-1">
           {/* Category and Read Time */}
           <div className="flex items-center gap-2 text-xs text-gray-500 uppercase mb-2">
-            <span>{item.category || 'PRODUCT'}</span>
+            <span>{item.category}</span>
             <span>•</span>
-            <span>{item.readTime || '4 MINUTE READ'}</span>
+            <span>{item.readMinutes} MIN READ</span>
           </div>
           
           {/* Title */}
@@ -255,7 +289,7 @@ const BlogDetail = () => {
           
           {/* Excerpt */}
           <p className="text-sm text-gray-600 line-clamp-2">
-            {item.excerpt || item.blogDetails?.substring(0, 120) + '...'}
+            {item.excerpt}
           </p>
         </div>
       </div>

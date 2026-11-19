@@ -21,18 +21,21 @@ export default function DashBody() {
     const navigate = useNavigate();
 
 const [ambassador, setAmbassador] = useState(null);
+const [summary, setSummary] = useState(null);
 const [stats, setStats] = useState(null);
 const [loadingAmbassador, setLoadingAmbassador] = useState(true);
 
 useEffect(() => {
   async function fetchDashboard() {
     try {
-      const [meRes, statsRes] = await Promise.all([
+      const [meRes, statsRes, summaryRes] = await Promise.all([
         api.get('/api/ambassadors/me'),
         api.get('/api/ambassadors/me/stats'),
+        api.get('/api/ambassadors/me/summary').catch(() => null), // new: this one may fail quietly
       ]);
       setAmbassador(meRes.data.ambassador);
       setStats(statsRes.data.stats);
+      setSummary(summaryRes?.data?.earnings ?? null);
     } catch (err) {
       setAmbassador(null);
     } finally {

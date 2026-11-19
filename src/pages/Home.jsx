@@ -6,6 +6,7 @@ import Services from "../components/Services"
 import Partnership from "../components/Partnership"
 import TestimonialsSection  from "../components/TestimonialsSection "
 import Newsletter from "../components/Newsletter"
+import FAQPage from './faqPage'
 import Footer from "../components/Footer"
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
     <Questions/>
     <Services/>
     <Partnership/>
+    <FAQPage/>
     <TestimonialsSection/>
     <Newsletter/>
     

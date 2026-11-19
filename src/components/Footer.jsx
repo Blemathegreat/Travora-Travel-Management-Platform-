@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+const food = [ "rice", " bean", "yam"]
+ 
 const Footer = () => {
   const footerLinks = {
     support: [

@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { images, testimonials } from '../assets/Photo';
+import { images } from '../assets/Photo';
+import { api } from '../utils/apiClient';
+import { cdn } from '../utils/Image';
 
 const TestimonialsSection = () => {
+  const [testimonials, setTestimonials] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // 12 testimonials total
- 
+  // Real testimonials come from the database (only the published ones)
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get('/api/testimonials')
+      .then((res) => !cancelled && setTestimonials((res?.data ?? res).testimonials || []))
+      .catch(() => {}); // if it fails we simply hide the section
+    return () => { cancelled = true; };
+  }, []);
 
   const itemsPerPage = 3;
   const totalPages = Math.ceil(testimonials.length / itemsPerPage);
@@ -40,6 +50,9 @@ const TestimonialsSection = () => {
     const startIndex = currentPage * itemsPerPage;
     return testimonials.slice(startIndex, startIndex + itemsPerPage);
   };
+
+  // Nothing to show yet? Hide the whole section instead of showing an empty box.
+  if (testimonials.length === 0) return null;
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -102,11 +115,17 @@ const TestimonialsSection = () => {
                 {/* Profile Image */}
                 <div className=" absolute top-[-20px] flex justify-center mb-4">
                   <div className="">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="  w-16 h-16 rounded-full object-cover ring-4 ring-gray-100 transition-transform duration-300 group-hover:scale-110"
-                    />
+                    {testimonial.photoUrl ? (
+                      <img
+                        src={cdn(testimonial.photoUrl, 160)}
+                        alt={testimonial.name}
+                        className="  w-16 h-16 rounded-full object-cover ring-4 ring-gray-100 transition-transform duration-300 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full ring-4 ring-gray-100 bg-[#0b4da0] text-white flex items-center justify-center text-xl font-semibold">
+                        {testimonial.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
@@ -140,7 +159,7 @@ const TestimonialsSection = () => {
 
                 {/* Testimonial Text */}
                 <p className="text-gray-600 text-sm leading-relaxed text-center">
-                  {testimonial.text}
+                  {testimonial.quote}
                 </p>
               </motion.div>
             ))}

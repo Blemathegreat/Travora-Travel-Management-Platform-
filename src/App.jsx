@@ -17,7 +17,7 @@ import BlogDetail from "./components/blog/BlogDetail"
 import ReferalActivities from './pages/ReferalActivities'
 import AmbassordorReward from './pages/AmbassadorReward'
 import AdminConsultationSettings from "./pages/admin/AdminConsultationsSettings"
-
+import Messages from './pages/Messages'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import PublicLayout from './layout/PublicLayout'
@@ -37,6 +37,7 @@ import ConsultationBookings from './pages/admin/ConsultationBookings'
 import Inbox from './pages/admin/Inbox'
 import FAQ from './pages/admin/FAQ'
 import Users from './pages/admin/Users'
+import MyConsultations from './pages/MyConsultations'
 
 export default function App() {
   return (
@@ -45,6 +46,24 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route path='/' element={<Home/>}/>
         <Route path='/consultation' element={<Consultation/>}/>
+        <Route
+  path='/my-consultations'
+  element={
+    <ProtectedRoute allowedRoles={['customer']}>
+      <MyConsultations />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path='/messages'
+  element={
+    <ProtectedRoute allowedRoles={['customer', 'ambassador']}>
+      <Messages/>
+    </ProtectedRoute>
+  }
+/>
+
         <Route path='/contact' element={<Contact/>}/>
         <Route path='/blog' element={<Blog/>}/>
         <Route path='/blog/:id' element={<BlogDetail/>}/>

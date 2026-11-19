@@ -1,6 +1,7 @@
 import { images } from "../../assets/Photo";
 import React, { useState } from "react";
 import { toast } from 'react-toastify'
+import { api } from "../../utils/apiClient";
 
 const INITIAL_STATE = {
   fullname: "",
@@ -18,7 +19,7 @@ const validate = (name, value) => {
 
   switch (name) {
     case "fullname":
-      if (value.trim().length < 6) {
+      if (value.trim().length < 2) {
         error = "Full name must be at least 6 characters";
       }
       break;
@@ -47,6 +48,7 @@ const validate = (name, value) => {
 export default function ViaggioForm() {
   const [formData, setFormData] = useState(INITIAL_STATE);
   const [errors, setErrors] = useState({});
+  const [sending, setSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,24 +65,36 @@ export default function ViaggioForm() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+   
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ validate all fields on submit
     const newErrors = {};
     Object.entries(formData).forEach(([name, value]) => {
       const error = validate(name, value);
       if (error) newErrors[name] = error;
     });
-
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
-    if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted:", formData);
+    setSending(true);
+    try {
+      const res = await api.post("/api/tickets", {
+        fullName: formData.fullname.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+      });
+      const ref = (res?.data ?? res)?.reference;
       setFormData(INITIAL_STATE);
-      toast.success('Message received — we will get back to you shortly')
+      toast.success(`Message received${ref ? ` (ref ${ref})` : ""}. We will get back to you shortly.`);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSending(false);
     }
-  };
+  };;
 
   return (
     <div
@@ -156,9 +170,10 @@ export default function ViaggioForm() {
 
           <button
             type="submit"
+            disabled={sending}
             className="mt-7 w-full md:w-auto bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-10 py-2.5 rounded transition-colors"
           >
-            Submit
+          {sending ? "Sending..." : "Submit"}
           </button>
         </form>
 

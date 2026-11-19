@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, MoreVertical, Eye, Ban, XCircle } from 'lucide-react'
+import { ArrowLeft, MoreVertical, Eye, Ban, XCircle, RotateCcw } from 'lucide-react'
 import { api } from '../../utils/apiClient'
 import { showSuccess, showError } from '../../utils/toastConfig'
 
@@ -29,9 +29,6 @@ export default function AmbassadorList() {
     }
   }
 
-  // Database values on the left, what we show on screen on the right -
-  // one single place that maps between the two, so the rest of this
-  // file never has to think about database spelling at all.
   const statusLabels = {
     pending_approval: 'Pending Approval',
     active: 'Productive',
@@ -80,6 +77,17 @@ const handleReject = async (id) => {
     try {
       await api.patch(`/api/ambassadors/${id}/suspend`)
       showSuccess('Ambassador suspended')
+      setActiveMenu(null)
+      fetchAmbassadors()
+    } catch (err) {
+      showError(err.message)
+    }
+  }
+
+    const handleReactivate = async (id) => {
+    try {
+      await api.patch(`/api/ambassadors/${id}/reactivate`)
+      showSuccess('Ambassador reactivated')
       setActiveMenu(null)
       fetchAmbassadors()
     } catch (err) {
@@ -223,6 +231,16 @@ const handleReject = async (id) => {
                               >
                                 <Ban size={16} />
                                 Suspend
+                              </button>
+                            )}
+
+                                                        {amb.status === 'suspended' && (
+                              <button
+                                onClick={() => handleReactivate(amb.id)}
+                                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-green-700 hover:bg-slate-50 transition-colors border-t border-slate-200 last:rounded-b-xl"
+                              >
+                                <RotateCcw size={16} />
+                                Reactivate
                               </button>
                             )}
                           </div>
