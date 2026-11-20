@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { images } from '../assets/Photo';
 import { api } from '../utils/apiClient';
-import { cdn } from '../utils/Image';
+import { cdn } from '../utils/image';
 
 const TestimonialsSection = () => {
   const [testimonials, setTestimonials] = useState([]);

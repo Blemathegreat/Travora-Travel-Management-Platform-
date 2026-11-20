@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Search, Plus, Star, X, Pencil, Trash2, Eye, EyeOff } from 'lucide-react'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { api } from '../../utils/apiClient'
-import { cdn } from '../../utils/Image'
+import { cdn } from '../../utils/image'
 import { showError, showSuccess, showWarning } from '../../utils/toastConfig'
 
 const ease = [0.22, 1, 0.36, 1]
